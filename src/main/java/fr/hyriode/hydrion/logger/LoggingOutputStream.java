@@ -1,0 +1,37 @@
+package fr.hyriode.hydrion.logger;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Project: Hydrion
+ * Created by AstFaster
+ * on 03/09/2021 at 10:05
+ */
+public class LoggingOutputStream extends ByteArrayOutputStream {
+
+    private static final String separator = System.getProperty("line.separator");
+
+    private final Logger logger;
+    private final Level level;
+
+    public LoggingOutputStream(Logger logger, Level level) {
+        this.logger = logger;
+        this.level = level;
+    }
+
+    @Override
+    public void flush() throws IOException {
+        final String contents = this.toString(StandardCharsets.UTF_8.name());
+
+        super.reset();
+
+        if (!contents.isEmpty() && !contents.equals(separator)) {
+            this.logger.log(level, contents);
+        }
+    }
+
+}

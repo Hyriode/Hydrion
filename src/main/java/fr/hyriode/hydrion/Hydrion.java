@@ -1,8 +1,11 @@
 package fr.hyriode.hydrion;
 
 import fr.hyriode.hydrion.command.CommandManager;
+import fr.hyriode.hydrion.configuration.Configuration;
+import fr.hyriode.hydrion.configuration.ConfigurationManager;
 import fr.hyriode.hydrion.logger.HydrionLogger;
 import fr.hyriode.hydrion.logger.LoggingOutputStream;
+import fr.hyriode.hydrion.network.NetworkManager;
 import fr.hyriode.hydrion.util.References;
 import jline.console.ConsoleReader;
 
@@ -19,8 +22,15 @@ import java.util.logging.Logger;
  */
 public class Hydrion {
 
+    /** Network */
+    private NetworkManager networkManager;
+
     /** Command */
     private CommandManager commandManager;
+
+    /** Configuration */
+    private ConfigurationManager configurationManager;
+    private Configuration configuration;
 
     /** Logger */
     private ConsoleReader consoleReader;
@@ -39,13 +49,6 @@ public class Hydrion {
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 
         this.run();
-    }
-
-    private void run() {
-        this.running = true;
-
-        this.commandManager = new CommandManager(this);
-        this.commandManager.start();
     }
 
     private void setupLogger() {
@@ -68,10 +71,24 @@ public class Hydrion {
         }
     }
 
+    private void run() {
+        this.running = true;
+
+        this.configurationManager = new ConfigurationManager(new File("config.json"));
+        this.configuration = this.configurationManager.loadConfiguration();
+
+        this.commandManager = new CommandManager(this);
+        this.commandManager.start();
+
+        this.networkManager = new NetworkManager(this);
+        this.networkManager.start();
+    }
+
     public void stop() {
         this.running = false;
 
         this.commandManager.shutdown();
+        this.networkManager.shutdown();
 
         System.out.println(References.NAME + " is now down. See you soon!");
 
@@ -95,6 +112,22 @@ public class Hydrion {
 
     public ConsoleReader getConsoleReader() {
         return this.consoleReader;
+    }
+
+    public ConfigurationManager getConfigurationManager() {
+        return this.configurationManager;
+    }
+
+    public Configuration getConfiguration() {
+        return this.configuration;
+    }
+
+    public CommandManager getCommandManager() {
+        return this.commandManager;
+    }
+
+    public NetworkManager getNetworkManager() {
+        return this.networkManager;
     }
 
     public static Logger getLogger() {

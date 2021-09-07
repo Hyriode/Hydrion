@@ -1,4 +1,4 @@
-package fr.hyriode.hydrion.network.util;
+package fr.hyriode.hydrion.network.api.util;
 
 import io.netty.util.concurrent.FastThreadLocalThread;
 

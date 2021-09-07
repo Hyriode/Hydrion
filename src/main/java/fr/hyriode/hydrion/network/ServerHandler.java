@@ -1,22 +1,17 @@
 package fr.hyriode.hydrion.network;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
+import fr.hyriode.hydrion.network.api.Context;
+import fr.hyriode.hydrion.network.api.Router;
+import fr.hyriode.hydrion.network.api.request.QueryParameter;
+import fr.hyriode.hydrion.network.api.request.Request;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
-import io.netty.util.AsciiString;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * Project: Hydrion
@@ -25,106 +20,62 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 public class ServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
-    private HttpRequest request;
-    private FullHttpRequest fullRequest;
-    private HttpHeaders headers;
+    private static final String FAVICON_ICO = "favicon.ico";
 
-    private static final AsciiString CONTENT_TYPE = AsciiString.cached("Content-Type");
-    private static final AsciiString CONTENT_LENGTH = AsciiString.cached("Content-Length");
-    private static final AsciiString CONNECTION = AsciiString.cached("Connection");
-    private static final AsciiString KEEP_ALIVE = AsciiString.cached("keep-alive");
+    private final Router router;
+
+    public ServerHandler(Router router) {
+        this.router = router;
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
-        final Response response = new Response("AstFaster");
-
         if (msg instanceof HttpRequest) {
-            this.request = (HttpRequest) msg;
-            this.headers = this.request.headers();
+            final HttpRequest request = (HttpRequest) msg;
 
-            final String uri = this.request.uri();
-            final HttpMethod method = this.request.method();
+            final String uri = request.uri();
+            final HttpMethod method = request.method();
 
-            response.setMethod(method.name());
+            /*if (uri.equals("/" + FAVICON_ICO)) {
+                final InputStream inputStream = Hydrion.class.getResourceAsStream("/" + FAVICON_ICO);
 
-            System.out.println("HTTP URI: " + uri);
+                if (inputStream != null) {
+                    final byte[] bytes = ByteStreams.toByteArray(inputStream);
 
-            System.out.println(method);
-
-            if (method.equals(HttpMethod.GET)) {
-                final QueryStringDecoder queryDecoder = new QueryStringDecoder(uri, StandardCharsets.UTF_8);
-                final Map<String, List<String>> uriParameters = queryDecoder.parameters();
-
-                for (Map.Entry<String, List<String>> parameter : uriParameters.entrySet()) {
-                    for (String parameterValue : parameter.getValue()) {
-                        System.out.println(parameter.getKey() + "=" + parameterValue);
-                    }
+                    this.sendResponse(ctx, bytes);
+                } else {
+                    Hydrion.getLogger().warning("Cannot get " + FAVICON_ICO + " from resources!");
                 }
-            } else if (method.equals(HttpMethod.POST)) {
-                this.fullRequest = (FullHttpRequest) msg;
+                return;
+            }*/
 
-                this.dealWithContentType();
-            }
-        }
-
-        final String json = new Gson().toJson(response);
-        final byte[] content = json.getBytes(StandardCharsets.UTF_8);
-
-        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(content));
-        httpResponse.headers().set(CONTENT_TYPE, "text/plain");
-        httpResponse.headers().setInt(CONTENT_LENGTH, httpResponse.content().readableBytes());
-
-        boolean keepAlive = HttpUtil.isKeepAlive(request);
-        if (!keepAlive) {
-            ctx.write(httpResponse).addListener(ChannelFutureListener.CLOSE);
-        } else {
-            httpResponse.headers().set(CONNECTION, KEEP_ALIVE);
-            ctx.write(httpResponse);
+            this.router.handle(new Context(ctx, ""), new Request((FullHttpRequest) request, this.getQueryParameters(uri)));
         }
     }
 
-    private void dealWithContentType() {
-        final String contentType = this.getContentType();
 
-        if (contentType.equals("application/json")) {
-            final String json = this.fullRequest.content().toString(StandardCharsets.UTF_8);
-            final JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
 
-            for (Map.Entry<String, JsonElement> item : jsonObject.entrySet()) {
-                System.out.println(item.getKey() + "=" + item.getValue().toString());
-            }
-        } else if (contentType.equals("application/x-www-form-urlencoded")) {
-            final String json = fullRequest.content().toString(StandardCharsets.UTF_8);
-            final QueryStringDecoder queryDecoder = new QueryStringDecoder(json, false);
-            final Map<String, List<String>> uriParameters = queryDecoder.parameters();
+    private List<QueryParameter> getQueryParameters(String uri) {
+        final QueryStringDecoder queryDecoder = new QueryStringDecoder(uri, StandardCharsets.UTF_8);
+        final Map<String, List<String>> uriParameters = queryDecoder.parameters();
+        final List<QueryParameter> queryParameters = new ArrayList<>();
 
-            for (Map.Entry<String, List<String>> parameter : uriParameters.entrySet()) {
-                for (String value : parameter.getValue()) {
-                    System.out.println(parameter.getKey() + "=" + value);
-                }
-            }
+        for (Map.Entry<String, List<String>> parameter : uriParameters.entrySet()) {
+           queryParameters.add(new QueryParameter(parameter.getKey(), parameter.getValue()));
         }
-    }
 
-    private String getContentType() {
-        final String contentType = this.headers.get("Content-Type");
-
-        if (contentType != null) {
-            final String[] list = contentType.split(";");
-
-            return list[0];
-        }
-        return "";
+        return queryParameters;
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+    public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         ctx.close();
     }
+
 }

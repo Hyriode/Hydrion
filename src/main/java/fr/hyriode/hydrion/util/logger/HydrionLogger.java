@@ -1,4 +1,4 @@
-package fr.hyriode.hydrion.logger;
+package fr.hyriode.hydrion.util.logger;
 
 import fr.hyriode.hydrion.Hydrion;
 

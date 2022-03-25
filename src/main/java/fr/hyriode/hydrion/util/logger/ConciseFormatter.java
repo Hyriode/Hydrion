@@ -1,4 +1,4 @@
-package fr.hyriode.hydrion.logger;
+package fr.hyriode.hydrion.util.logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,7 +35,7 @@ public class ConciseFormatter extends Formatter {
 
         this.appendLevel(formatted, record.getLevel());
 
-        formatted.append("] - ")
+        formatted.append("] ")
                 .append(this.formatMessage(record))
                 .append("\n");
 
@@ -51,18 +51,18 @@ public class ConciseFormatter extends Formatter {
     private void appendLevel(StringBuilder builder, Level level) {
         if (this.colored) {
 
-           ChatColor color;
+           LogColor color;
             if (level == Level.INFO) {
-                color = ChatColor.AQUA;
+                color = LogColor.AQUA;
             } else if (level == Level.WARNING) {
-                color = ChatColor.YELLOW;
+                color = LogColor.YELLOW;
             } else if (level == Level.SEVERE) {
-                color = ChatColor.RED;
+                color = LogColor.RED;
             } else {
-                color = ChatColor.BLUE;
+                color = LogColor.BLUE;
             }
 
-            builder.append(color).append(level.getLocalizedName()).append(ChatColor.RESET);
+            builder.append(color).append(level.getLocalizedName()).append(LogColor.RESET);
         } else {
             builder.append(level.getLocalizedName());
         }

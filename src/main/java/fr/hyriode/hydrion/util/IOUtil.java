@@ -1,13 +1,16 @@
 package fr.hyriode.hydrion.util;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Project: Hydrion
  * Created by AstFaster
  * on 04/09/2021 at 11:55
  */
-public class FileUtil {
+public class IOUtil {
 
     public static boolean exist(File folder, String name) {
         boolean exist = false;
@@ -23,16 +26,15 @@ public class FileUtil {
         return exist;
     }
 
-    public static String loadFile(File file) {
+    public static String loadFile(Path path) {
         final StringBuilder sb = new StringBuilder();
-        if (file.exists()) {
-            try {
+        if (Files.exists(path)) {
+            try (final BufferedReader reader = Files.newBufferedReader(path)) {
                 String line;
-                final BufferedReader reader = new BufferedReader(new FileReader(file));
 
-                while ((line = reader.readLine()) != null) sb.append(line);
-
-                reader.close();
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -40,15 +42,10 @@ public class FileUtil {
         return sb.toString();
     }
 
-    public static void save(File file, String content) {
+    public static void save(Path path, String content) {
         try {
-            if (file.getParentFile() != null) file.getParentFile().mkdirs();
-            file.createNewFile();
-
-            final FileWriter writer = new FileWriter(file);
-
-            writer.write(content);
-            writer.close();
+            Files.createFile(path);
+            Files.write(path, content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,4 +1,4 @@
-package fr.hyriode.hydrion.logger;
+package fr.hyriode.hydrion.util.logger;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,7 +15,7 @@ public class LogDispatcher extends Thread {
     private final BlockingQueue<LogRecord> queue = new LinkedBlockingQueue<>();
 
     public LogDispatcher(HydrionLogger logger) {
-        super("Limbo Logger Thread");
+        super("Hyggdrasil Logger Thread");
         this.logger = logger;
     }
 
@@ -35,12 +35,12 @@ public class LogDispatcher extends Thread {
         for (LogRecord record : this.queue) {
             this.logger.doLog(record);
         }
+
     }
 
     public void queue(LogRecord record) {
-        if (!this.isInterrupted()) {
+        if (!this.isInterrupted())
             this.queue.add(record);
-        }
     }
 
     public BlockingQueue<LogRecord> getQueue() {

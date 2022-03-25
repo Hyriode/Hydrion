@@ -2,9 +2,10 @@ package fr.hyriode.hydrion.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import fr.hyriode.hydrion.util.FileUtil;
+import fr.hyriode.hydrion.util.IOUtil;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Project: Hydrion
@@ -13,13 +14,9 @@ import java.io.File;
  */
 public class ConfigurationManager {
 
+    public static final Path CONFIG_FILE = Paths.get("config.json");
+
     private Configuration configuration;
-
-    private final File configFile;
-
-    public ConfigurationManager(File configFile) {
-        this.configFile = configFile;
-    }
 
     public Configuration loadConfiguration() {
         System.out.println("Loading configuration...");
@@ -29,15 +26,15 @@ public class ConfigurationManager {
                 .serializeNulls()
                 .create();
 
-        final String json = FileUtil.loadFile(this.configFile);
+        final String json = IOUtil.loadFile(CONFIG_FILE);
 
         if (!json.equals("")) {
             return this.configuration = gson.fromJson(json, Configuration.class);
         } else {
-            this.configuration = new Configuration("localhost", 8080);
-            FileUtil.save(this.configFile, gson.toJson(configuration));
+            this.configuration = new Configuration(8080);
+            IOUtil.save(CONFIG_FILE, gson.toJson(configuration));
 
-            System.err.println("Please fill configuration file before continue !");
+            System.err.println("Please fill configuration file before continue!");
             System.exit(0);
 
             return this.configuration;

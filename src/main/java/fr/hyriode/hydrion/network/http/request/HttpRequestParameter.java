@@ -1,18 +1,18 @@
-package fr.hyriode.hydrion.network.api.request;
+package fr.hyriode.hydrion.network.http.request;
 
 import java.util.List;
 
 /**
  * Project: Hydrion
  * Created by AstFaster
- * on 05/09/2021 at 08:49
+ * on 25/03/2022 at 11:05
  */
-public class QueryParameter {
+public class HttpRequestParameter {
 
     private final String key;
     private final List<String> values;
 
-    public QueryParameter(String key, List<String> values) {
+    public HttpRequestParameter(String key, List<String> values) {
         this.key = key;
         this.values = values;
     }
@@ -23,6 +23,10 @@ public class QueryParameter {
 
     public List<String> getValues() {
         return this.values;
+    }
+
+    public String getValue() {
+        return this.values.get(0);
     }
 
 }

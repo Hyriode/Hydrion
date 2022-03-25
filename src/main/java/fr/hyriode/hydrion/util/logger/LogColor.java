@@ -1,11 +1,11 @@
-package fr.hyriode.hydrion.logger;
+package fr.hyriode.hydrion.util.logger;
 
 /**
  * Project: Hydrion
  * Created by AstFaster
  * on 03/09/2021 at 10:05
  */
-public enum ChatColor {
+public enum LogColor {
 
     BLACK('0', 0x00),
     DARK_BLUE('1', 0x1),
@@ -38,11 +38,11 @@ public enum ChatColor {
     private final int intCode;
     private final boolean format;
 
-    ChatColor(char code, int intCode) {
+    LogColor(char code, int intCode) {
         this(code, intCode, false);
     }
 
-    ChatColor(char code, int intCode, boolean format) {
+    LogColor(char code, int intCode, boolean format) {
         this.toString = new String(new char[]{COLOR_CHAR, code});
         this.code = code;
         this.intCode = intCode;

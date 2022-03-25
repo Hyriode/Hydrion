@@ -1,4 +1,4 @@
-package fr.hyriode.hydrion.network.api.util;
+package fr.hyriode.hydrion.network.util;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
@@ -39,7 +39,7 @@ public enum NettyTransportType {
         return this.serverChannelClass;
     }
 
-    public EventLoopGroup eventLoopGroup(NettyGroupType groupType) {
+    public EventLoopGroup createEventLoopGroup(NettyGroupType groupType) {
         return this.eventLoopGroupFactory.apply(NettyThreadFactory.createThreadFactory(this.name, groupType));
     }
 

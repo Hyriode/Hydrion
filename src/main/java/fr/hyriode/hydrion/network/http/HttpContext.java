@@ -8,18 +8,17 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 
 /**
  * Project: Hydrion
  * Created by AstFaster
  * on 25/03/2022 at 12:00
  */
-public class HttpResponse {
+public class HttpContext {
 
     private final ChannelHandlerContext ctx;
 
-    public HttpResponse(ChannelHandlerContext ctx) {
+    public HttpContext(ChannelHandlerContext ctx) {
         this.ctx = ctx;
     }
 
@@ -42,6 +41,10 @@ public class HttpResponse {
 
     public void text(String content, int statusCode) {
         this.sendResponse(content.getBytes(StandardCharsets.UTF_8), HttpHeaderValues.TEXT_PLAIN.toString(), statusCode);
+    }
+
+    public void text(String content) {
+        this.text(content, HttpResponseStatus.OK.code());
     }
 
     public void html(String html, int statusCode) {

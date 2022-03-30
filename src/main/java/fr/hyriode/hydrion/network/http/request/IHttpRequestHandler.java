@@ -1,6 +1,6 @@
 package fr.hyriode.hydrion.network.http.request;
 
-import fr.hyriode.hydrion.network.http.HttpResponse;
+import fr.hyriode.hydrion.network.http.HttpContext;
 
 /**
  * Project: Hydrion
@@ -10,6 +10,6 @@ import fr.hyriode.hydrion.network.http.HttpResponse;
 @FunctionalInterface
 public interface IHttpRequestHandler {
 
-    void onRequest(HttpRequest request, HttpResponse context);
+    void onRequest(HttpRequest request, HttpContext ctx);
 
 }

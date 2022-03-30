@@ -1,6 +1,4 @@
-package fr.hyriode.hydrion;
-
-import com.google.gson.JsonObject;
+package fr.hyriode.hydrion.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,27 +11,22 @@ import java.nio.charset.StandardCharsets;
 /**
  * Project: Hydrion
  * Created by AstFaster
- * on 04/09/2021 at 11:31
+ * on 29/03/2022 at 21:16
  */
 public class Test {
 
     public static void main(String[] args) throws IOException {
-        final JsonObject object = new JsonObject();
 
-        object.addProperty("test", "Hello");
-        object.addProperty("second", "World");
-
-        final String url = "http://localhost:8080";
+        final String url = "http://localhost:8080/player?uuid=c7e68fae-32af-47ce-afbf-ee57e051a91f";
 
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
         connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestMethod("GET");
+
+        connection.addRequestProperty("API-Key", "c7e68fae-32af-47ce-afbf-ee57e051a91f");
 
         final OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-        wr.write(object.toString());
         wr.flush();
 
         StringBuilder sb = new StringBuilder();

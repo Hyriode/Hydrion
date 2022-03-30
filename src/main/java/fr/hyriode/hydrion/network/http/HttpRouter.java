@@ -20,10 +20,8 @@ public class HttpRouter {
         this.handlers = new HashMap<>();
     }
 
-    public void handleRequest(HttpRequest request, HttpResponse context) {
+    public void handleRequest(HttpRequest request, HttpContext context) {
         final String path = URIUtil.normalize(URIUtil.getURIPrefix(request.getUri()));
-
-        System.out.println(path);
 
         for (Map.Entry<String, IHttpRequestHandler> entry : this.handlers.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(path)) {

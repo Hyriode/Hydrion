@@ -32,4 +32,8 @@ public class NetworkManager {
         this.server.stop();
     }
 
+    public HttpServer getServer() {
+        return this.server;
+    }
+
 }

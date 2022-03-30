@@ -1,6 +1,6 @@
 package fr.hyriode.hydrion.network.http.server;
 
-import fr.hyriode.hydrion.network.http.HttpResponse;
+import fr.hyriode.hydrion.network.http.HttpContext;
 import fr.hyriode.hydrion.network.http.HttpRouter;
 import fr.hyriode.hydrion.network.http.request.HttpRequestParameter;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,7 +30,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
         if (msg instanceof final HttpRequest request) {
             final String uri = request.uri();
 
-            this.router.handleRequest(new fr.hyriode.hydrion.network.http.request.HttpRequest(request, this.getQueryParameters(uri)), new HttpResponse(ctx));
+            this.router.handleRequest(new fr.hyriode.hydrion.network.http.request.HttpRequest(request, this.getQueryParameters(uri)), new HttpContext(ctx));
         }
     }
 

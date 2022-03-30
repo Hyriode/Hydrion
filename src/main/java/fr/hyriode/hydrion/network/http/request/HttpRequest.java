@@ -34,6 +34,10 @@ public class HttpRequest {
         return this.method;
     }
 
+    public boolean hasParameter(String key) {
+        return this.getParameter(key) != null;
+    }
+
     public HttpRequestParameter getParameter(String key) {
         for (HttpRequestParameter parameter : this.parameters) {
             if (parameter.getKey().equalsIgnoreCase(key)) {

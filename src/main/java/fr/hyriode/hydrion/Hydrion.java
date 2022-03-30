@@ -3,6 +3,8 @@ package fr.hyriode.hydrion;
 import com.google.gson.Gson;
 import fr.hyriode.hydrion.configuration.Configuration;
 import fr.hyriode.hydrion.configuration.ConfigurationManager;
+import fr.hyriode.hydrion.handler.player.PlayerHandler;
+import fr.hyriode.hydrion.network.http.HttpRouter;
 import fr.hyriode.hydrion.util.logger.HydrionLogger;
 import fr.hyriode.hydrion.util.logger.LoggingOutputStream;
 import fr.hyriode.hydrion.network.NetworkManager;
@@ -49,11 +51,20 @@ public class Hydrion {
         this.configuration = this.configurationManager.loadConfiguration();
 
         this.networkManager = new NetworkManager(this);
-        this.networkManager.start();
+
+        this.registerHandlers();
 
         this.running = true;
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
+
+        this.networkManager.start();
+    }
+
+    private void registerHandlers() {
+        final HttpRouter router = this.networkManager.getServer().getRouter();
+
+        router.addHandler("/player", new PlayerHandler());
     }
 
     private void setupLogger() {

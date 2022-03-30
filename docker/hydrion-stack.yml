@@ -1,0 +1,17 @@
+version: "3.8"
+
+networks:
+  hydrion:
+    driver: overlay
+
+services:
+  postgresql:
+    image: postgres:14.2-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    networks:
+      - hydrion
+    environment:
+      POSTGRES_USER: hyriode
+      POSTGRES_PASSWORD: p@ssw0rd

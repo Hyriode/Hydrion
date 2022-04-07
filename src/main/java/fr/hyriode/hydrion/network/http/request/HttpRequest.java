@@ -1,10 +1,13 @@
 package fr.hyriode.hydrion.network.http.request;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Project: Hydrion
@@ -13,17 +16,22 @@ import java.util.List;
  */
 public class HttpRequest {
 
+    private final Map<Class<?>, List<Object>> parameterObjects;
+
     private final String uri;
     private final HttpMethod method;
     private final HttpHeaders headers;
+    private final ByteBuf content;
 
     private final List<HttpRequestParameter> parameters;
 
-    public HttpRequest(io.netty.handler.codec.http.HttpRequest request, List<HttpRequestParameter> parameters) {
+    public HttpRequest(FullHttpRequest request, List<HttpRequestParameter> parameters) {
         this.parameters = parameters;
         this.uri = request.uri();
         this.method = request.method();
         this.headers = request.headers();
+        this.content = request.content();
+        this.parameterObjects = new HashMap<>();
     }
 
     public String getUri() {
@@ -47,12 +55,31 @@ public class HttpRequest {
         return null;
     }
 
+
+    public <T> T getParameter(int index, Class<T> clazz) {
+        final List<Object> objects = this.parameterObjects.get(clazz);
+
+        return objects == null ? null : clazz.cast(objects.get(index));
+    }
+
+    public <T> T getParameter(Class<T> clazz) {
+        return this.getParameter(0, clazz);
+    }
+
     public List<HttpRequestParameter> getParameters() {
         return this.parameters;
     }
 
     public HttpHeaders getHeaders() {
         return this.headers;
+    }
+
+    public ByteBuf getContent() {
+        return this.content;
+    }
+
+    public Map<Class<?>, List<Object>> getParameterObjects() {
+        return this.parameterObjects;
     }
 
 }

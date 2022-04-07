@@ -3,8 +3,8 @@ package fr.hyriode.hydrion.network.http.server;
 import fr.hyriode.hydrion.network.http.HttpRouter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
 
 /**
  * Project: Hydrion
@@ -22,8 +22,8 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch) {
         ch.pipeline().
-                addLast("decoder", new HttpRequestDecoder())
-                .addLast("encoder", new HttpResponseEncoder())
+                addLast("codec", new HttpServerCodec())
+                .addLast("aggregator", new HttpObjectAggregator(8192))
                 .addLast("handler", new HttpServerHandler(this.router));
     }
 

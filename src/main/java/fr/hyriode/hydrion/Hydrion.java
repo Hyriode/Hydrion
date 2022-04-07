@@ -1,13 +1,18 @@
 package fr.hyriode.hydrion;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import fr.hyriode.hydrion.cache.CacheManager;
 import fr.hyriode.hydrion.configuration.Configuration;
 import fr.hyriode.hydrion.configuration.ConfigurationManager;
-import fr.hyriode.hydrion.handler.player.PlayerHandler;
-import fr.hyriode.hydrion.network.http.HttpRouter;
+import fr.hyriode.hydrion.database.mongodb.MongoDB;
+import fr.hyriode.hydrion.module.friends.FriendsModule;
+import fr.hyriode.hydrion.module.network.NetworkModule;
+import fr.hyriode.hydrion.module.player.PlayerModule;
+import fr.hyriode.hydrion.module.resources.ResourcesModule;
+import fr.hyriode.hydrion.network.NetworkManager;
 import fr.hyriode.hydrion.util.logger.HydrionLogger;
 import fr.hyriode.hydrion.util.logger.LoggingOutputStream;
-import fr.hyriode.hydrion.network.NetworkManager;
 import jline.console.ConsoleReader;
 
 import java.io.File;
@@ -24,18 +29,32 @@ import java.util.logging.Logger;
 public class Hydrion {
 
     public static final String NAME = "Hydrion";
-    public static final Gson GSON = new Gson();
+    public static final Gson GSON = new GsonBuilder()
+            .serializeNulls()
+            .create();
 
-    /** Network */
-    private NetworkManager networkManager;
+    /** Logger */
+    private ConsoleReader consoleReader;
+    private static HydrionLogger logger;
 
     /** Configuration */
     private ConfigurationManager configurationManager;
     private Configuration configuration;
 
-    /** Logger */
-    private ConsoleReader consoleReader;
-    private static HydrionLogger logger;
+    /** Databases */
+    private MongoDB mongoDB;
+
+    /** Cache */
+    private CacheManager cacheManager;
+
+    /** Network */
+    private NetworkManager networkManager;
+
+    /** Modules */
+    private PlayerModule playerModule;
+    private FriendsModule friendsModule;
+    private ResourcesModule resourcesModule;
+    private NetworkModule networkModule;
 
     /** Global information */
     private boolean running;
@@ -49,22 +68,21 @@ public class Hydrion {
 
         this.configurationManager = new ConfigurationManager();
         this.configuration = this.configurationManager.loadConfiguration();
+        this.mongoDB = new MongoDB(this.configuration.getMongoDBUrl());
+        this.mongoDB.start();
+        this.cacheManager = new CacheManager();
 
         this.networkManager = new NetworkManager(this);
-
-        this.registerHandlers();
+        this.playerModule = new PlayerModule(this);
+        this.friendsModule = new FriendsModule(this);
+        this.resourcesModule = new ResourcesModule(this);
+        this.networkModule = new NetworkModule(this);
 
         this.running = true;
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 
         this.networkManager.start();
-    }
-
-    private void registerHandlers() {
-        final HttpRouter router = this.networkManager.getServer().getRouter();
-
-        router.addHandler("/player", new PlayerHandler());
     }
 
     private void setupLogger() {
@@ -91,6 +109,8 @@ public class Hydrion {
 
         this.networkManager.shutdown();
 
+        this.mongoDB.stop();
+
         System.out.println(NAME + " is now down. See you soon!");
     }
 
@@ -110,8 +130,32 @@ public class Hydrion {
         return this.configuration;
     }
 
+    public MongoDB getMongoDB() {
+        return this.mongoDB;
+    }
+
+    public CacheManager getCacheManager() {
+        return this.cacheManager;
+    }
+
     public NetworkManager getNetworkManager() {
         return this.networkManager;
+    }
+
+    public PlayerModule getPlayerModule() {
+        return this.playerModule;
+    }
+
+    public FriendsModule getFriendsModule() {
+        return this.friendsModule;
+    }
+
+    public ResourcesModule getResourcesModule() {
+        return this.resourcesModule;
+    }
+
+    public NetworkModule getNetworkModule() {
+        return this.networkModule;
     }
 
     public static Logger getLogger() {

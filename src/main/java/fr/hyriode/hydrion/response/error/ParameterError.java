@@ -5,9 +5,9 @@ package fr.hyriode.hydrion.response.error;
  * Created by AstFaster
  * on 29/03/2022 at 20:56
  */
-public class HydrionParameterError extends HydrionError {
+public class ParameterError extends HydrionError {
 
-    public HydrionParameterError(String missingField) {
+    public ParameterError(String missingField) {
         super("Missing parameter field: [" + missingField + "]");
     }
 

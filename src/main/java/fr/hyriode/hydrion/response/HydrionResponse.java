@@ -1,8 +1,8 @@
 package fr.hyriode.hydrion.response;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import fr.hyriode.hydrion.Hydrion;
 import fr.hyriode.hydrion.object.HydrionObject;
 
 import java.util.Map;
@@ -32,7 +32,7 @@ public class HydrionResponse {
 
     public String toJson() {
         final JsonObject result = new JsonObject();
-        final JsonElement element = new Gson().toJsonTree(this.object);
+        final JsonElement element = Hydrion.GSON.toJsonTree(this.object);
 
         result.addProperty("success", this.success);
 

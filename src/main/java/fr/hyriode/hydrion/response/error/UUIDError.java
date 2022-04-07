@@ -5,9 +5,9 @@ package fr.hyriode.hydrion.response.error;
  * Created by AstFaster
  * on 29/03/2022 at 21:01
  */
-public class HydrionUUIDError extends HydrionError {
+public class UUIDError extends HydrionError {
 
-    public HydrionUUIDError() {
+    public UUIDError() {
         super("Malformed UUID");
     }
 

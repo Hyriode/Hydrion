@@ -2,11 +2,14 @@ package fr.hyriode.hydrion.network.http.server;
 
 import fr.hyriode.hydrion.network.http.HttpContext;
 import fr.hyriode.hydrion.network.http.HttpRouter;
+import fr.hyriode.hydrion.network.http.request.HttpRequest;
 import fr.hyriode.hydrion.network.http.request.HttpRequestParameter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.QueryStringDecoder;
 
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,7 @@ import java.util.Map;
  * Created by AstFaster
  * on 24/03/2022 at 17:34
  */
-public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
+public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private final HttpRouter router;
 
@@ -26,14 +29,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
-        if (msg instanceof final HttpRequest request) {
-            final String uri = request.uri();
-
-            this.router.handleRequest(new fr.hyriode.hydrion.network.http.request.HttpRequest(request, this.getQueryParameters(uri)), new HttpContext(ctx));
-        }
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) {
+        this.router.handleRequest(new HttpRequest(msg, this.getQueryParameters(msg.uri())), new HttpContext(ctx));
     }
-
 
     private List<HttpRequestParameter> getQueryParameters(String uri) {
         final QueryStringDecoder queryDecoder = new QueryStringDecoder(uri, StandardCharsets.UTF_8);
@@ -54,7 +52,9 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        if (!(cause instanceof SocketException)) {
+            cause.printStackTrace();
+        }
         ctx.close();
     }
 

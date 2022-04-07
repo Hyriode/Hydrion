@@ -31,7 +31,7 @@ public class ConfigurationManager {
         if (!json.equals("")) {
             return this.configuration = gson.fromJson(json, Configuration.class);
         } else {
-            this.configuration = new Configuration(8080);
+            this.configuration = new Configuration(8080, "mongodb://localhost");
             IOUtil.save(CONFIG_FILE, gson.toJson(configuration));
 
             System.err.println("Please fill configuration file before continue!");

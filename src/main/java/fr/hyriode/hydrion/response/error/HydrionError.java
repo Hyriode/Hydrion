@@ -30,5 +30,4 @@ public class HydrionError extends HydrionResponse {
         }
 
     }
-
 }

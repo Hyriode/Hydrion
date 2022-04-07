@@ -7,14 +7,20 @@ package fr.hyriode.hydrion.configuration;
  */
 public class Configuration {
 
-    private int port;
+    private final int port;
+    private final String mongoDBUrl;
 
-    public Configuration(int port) {
+    public Configuration(int port, String mongoDBUrl) {
         this.port = port;
+        this.mongoDBUrl = mongoDBUrl;
     }
 
     public int getPort() {
         return this.port;
+    }
+
+    public String getMongoDBUrl() {
+        return this.mongoDBUrl;
     }
 
 }

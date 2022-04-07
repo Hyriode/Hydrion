@@ -2,7 +2,6 @@ package fr.hyriode.hydrion.network;
 
 import fr.hyriode.hydrion.Hydrion;
 import fr.hyriode.hydrion.network.http.server.HttpServer;
-import io.netty.handler.codec.http.HttpResponseStatus;
 
 /**
  * Project: Hydrion
@@ -22,6 +21,8 @@ public class NetworkManager {
 
     public void start() {
         System.out.println("Starting network manager...");
+
+        this.server.getRouter().setFavicon("favicon.ico");
 
         this.server.start();
     }

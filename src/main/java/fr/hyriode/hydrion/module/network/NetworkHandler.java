@@ -2,11 +2,11 @@ package fr.hyriode.hydrion.module.network;
 
 import com.mongodb.BasicDBObject;
 import fr.hyriode.hydrion.Hydrion;
-import fr.hyriode.hydrion.handler.HydrionHandler;
-import fr.hyriode.hydrion.network.http.HttpContext;
-import fr.hyriode.hydrion.network.http.request.HttpRequest;
-import fr.hyriode.hydrion.response.HydrionPostRequestResponse;
-import fr.hyriode.hydrion.response.HydrionResponse;
+import fr.hyriode.hydrion.api.handler.HydrionHandler;
+import fr.hyriode.hydrion.api.http.HttpContext;
+import fr.hyriode.hydrion.api.http.request.HttpRequest;
+import fr.hyriode.hydrion.api.response.HydrionPostRequestResponse;
+import fr.hyriode.hydrion.api.response.HydrionResponse;
 import io.netty.handler.codec.http.HttpMethod;
 
 /**
@@ -18,8 +18,7 @@ public class NetworkHandler extends HydrionHandler {
 
     private final NetworkModule networkModule;
 
-    public NetworkHandler(Hydrion hydrion, NetworkModule networkModule) {
-        super(hydrion);
+    public NetworkHandler(NetworkModule networkModule) {
         this.networkModule = networkModule;
 
         this.addMethodHandler(HttpMethod.GET, (request, ctx) -> this.get());

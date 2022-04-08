@@ -5,7 +5,7 @@ plugins {
 apply plugin: 'maven-publish'
 
 version = '1.0.0'
-archivesBaseName = 'Hyggdrasil-API'
+archivesBaseName = 'Hydrion-API'
 
 java {
     withSourcesJar()
@@ -59,5 +59,7 @@ publishing {
 }
 
 dependencies {
-    api 'org.apache.httpcomponents:httpclient:4.5.13'
+    api 'io.netty:netty-all:4.1.75.Final'
+    api 'com.google.guava:guava:31.1-jre'
+    api 'org.mongodb:mongodb-driver-reactivestreams:4.5.1'
 }

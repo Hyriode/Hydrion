@@ -1,3 +1,4 @@
 rootProject.name = 'Hydrion'
+include 'Client'
 include 'API'
 

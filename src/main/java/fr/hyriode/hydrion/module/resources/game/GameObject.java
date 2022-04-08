@@ -1,7 +1,7 @@
 package fr.hyriode.hydrion.module.resources.game;
 
 import com.mongodb.BasicDBObject;
-import fr.hyriode.hydrion.object.HydrionObject;
+import fr.hyriode.hydrion.api.object.HydrionObject;
 
 import java.util.HashMap;
 import java.util.Map;

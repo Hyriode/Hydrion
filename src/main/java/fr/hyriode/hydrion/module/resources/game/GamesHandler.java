@@ -1,10 +1,9 @@
 package fr.hyriode.hydrion.module.resources.game;
 
 import com.mongodb.BasicDBObject;
-import fr.hyriode.hydrion.Hydrion;
-import fr.hyriode.hydrion.handler.HydrionHandler;
+import fr.hyriode.hydrion.api.handler.HydrionHandler;
+import fr.hyriode.hydrion.api.response.HydrionResponse;
 import fr.hyriode.hydrion.module.resources.ResourcesModule;
-import fr.hyriode.hydrion.response.HydrionResponse;
 import io.netty.handler.codec.http.HttpMethod;
 
 import java.util.HashMap;
@@ -22,8 +21,7 @@ public class GamesHandler extends HydrionHandler {
 
     private final ResourcesModule resourcesManager;
 
-    public GamesHandler(Hydrion hydrion, ResourcesModule resourcesManager) {
-        super(hydrion);
+    public GamesHandler(ResourcesModule resourcesManager) {
         this.resourcesManager = resourcesManager;
 
         this.addMethodHandler(HttpMethod.GET, (ctx, response) -> {

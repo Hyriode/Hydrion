@@ -2,7 +2,7 @@ package fr.hyriode.hydrion.module.player;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import fr.hyriode.hydrion.object.HydrionObject;
+import fr.hyriode.hydrion.api.object.HydrionObject;
 
 /**
  * Project: Hydrion

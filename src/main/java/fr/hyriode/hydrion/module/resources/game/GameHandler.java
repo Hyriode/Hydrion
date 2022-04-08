@@ -3,13 +3,12 @@ package fr.hyriode.hydrion.module.resources.game;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.BasicDBObject;
-import fr.hyriode.hydrion.Hydrion;
-import fr.hyriode.hydrion.handler.HydrionHandler;
-import fr.hyriode.hydrion.handler.parameter.StringHandler;
+import fr.hyriode.hydrion.api.handler.HydrionHandler;
+import fr.hyriode.hydrion.api.handler.parameter.StringHandler;
+import fr.hyriode.hydrion.api.response.HydrionPostRequestResponse;
+import fr.hyriode.hydrion.api.response.HydrionResponse;
+import fr.hyriode.hydrion.api.response.error.BadJsonError;
 import fr.hyriode.hydrion.module.resources.ResourcesModule;
-import fr.hyriode.hydrion.response.HydrionPostRequestResponse;
-import fr.hyriode.hydrion.response.HydrionResponse;
-import fr.hyriode.hydrion.response.error.BadJsonError;
 import io.netty.handler.codec.http.HttpMethod;
 
 /**
@@ -23,8 +22,7 @@ public class GameHandler extends HydrionHandler {
 
     private final ResourcesModule resourcesModule;
 
-    public GameHandler(Hydrion hydrion, ResourcesModule resourcesModule) {
-        super(hydrion);
+    public GameHandler(ResourcesModule resourcesModule) {
         this.resourcesModule = resourcesModule;
 
         this.addParameterHandlers(new StringHandler(NAME_PARAMETER));

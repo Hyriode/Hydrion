@@ -3,7 +3,6 @@ package fr.hyriode.hydrion.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -44,10 +43,18 @@ public class IOUtil {
         return sb.toString();
     }
 
+    public static void createDirectory(Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void save(Path path, String content) {
         try {
             Files.createFile(path);
-            Files.write(path, content.getBytes(StandardCharsets.UTF_8));
+            Files.writeString(path, content);
         } catch (IOException e) {
             e.printStackTrace();
         }

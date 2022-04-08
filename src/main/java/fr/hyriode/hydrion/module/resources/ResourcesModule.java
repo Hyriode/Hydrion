@@ -3,11 +3,9 @@ package fr.hyriode.hydrion.module.resources;
 import com.mongodb.BasicDBObject;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import fr.hyriode.hydrion.Hydrion;
-import fr.hyriode.hydrion.module.AbstractModule;
+import fr.hyriode.hydrion.api.module.HydrionModule;
 import fr.hyriode.hydrion.module.resources.game.GameHandler;
 import fr.hyriode.hydrion.module.resources.game.GamesHandler;
-import fr.hyriode.hydrion.network.http.HttpRouter;
 
 import java.util.List;
 
@@ -16,7 +14,7 @@ import java.util.List;
  * Created by AstFaster
  * on 02/04/2022 at 18:32
  */
-public class ResourcesModule extends AbstractModule {
+public class ResourcesModule extends HydrionModule {
 
     private static final String NAME_KEY = "name";
 
@@ -27,15 +25,9 @@ public class ResourcesModule extends AbstractModule {
 
     private MongoDatabase database;
 
-    public ResourcesModule(Hydrion hydrion) {
-        super(hydrion);
-    }
-
     protected void init() {
-        final HttpRouter router = this.hydrion.getNetworkManager().getServer().getRouter();
-
-        router.addHandler(PATH + "games", new GamesHandler(this.hydrion, this));
-        router.addHandler(PATH + "game", new GameHandler(this.hydrion, this));
+        this.addHandler(PATH + "games", new GamesHandler(this));
+        this.addHandler(PATH + "game", new GameHandler(this));
 
         this.database = this.mongoDB.getDatabase(NAME);
         this.gamesCollection = this.database.getCollection("games", BasicDBObject.class);

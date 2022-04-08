@@ -48,7 +48,7 @@ public class HttpServer {
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .childHandler(new HttpServerInitializer(this.router));
 
-            final Channel channel = bootstrap.bind("127.0.0.1", this.port).sync().channel();
+            final Channel channel = bootstrap.bind("0.0.0.0", this.port).sync().channel();
 
             System.out.println("Listening on " + channel.localAddress().toString());
 

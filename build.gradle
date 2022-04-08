@@ -46,9 +46,7 @@ shadowJar {
 }
 
 dependencies {
+    api project(':API')
     implementation 'org.slf4j:slf4j-nop:1.7.36'
-    implementation 'io.netty:netty-all:4.1.75.Final'
-    implementation 'com.google.guava:guava:31.1-jre'
     implementation 'jline:jline:2.14.6'
-    implementation 'org.mongodb:mongodb-driver-reactivestreams:4.5.1'
 }

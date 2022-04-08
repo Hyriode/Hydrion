@@ -1,9 +1,9 @@
 package fr.hyriode.hydrion.network.http.server;
 
-import fr.hyriode.hydrion.network.http.HttpContext;
+import fr.hyriode.hydrion.api.http.HttpContext;
+import fr.hyriode.hydrion.api.http.request.HttpRequest;
+import fr.hyriode.hydrion.api.http.request.HttpRequestParameter;
 import fr.hyriode.hydrion.network.http.HttpRouter;
-import fr.hyriode.hydrion.network.http.request.HttpRequest;
-import fr.hyriode.hydrion.network.http.request.HttpRequestParameter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;

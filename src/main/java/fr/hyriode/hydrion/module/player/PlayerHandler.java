@@ -1,13 +1,12 @@
 package fr.hyriode.hydrion.module.player;
 
 import com.mongodb.BasicDBObject;
-import fr.hyriode.hydrion.Hydrion;
-import fr.hyriode.hydrion.handler.HydrionHandler;
-import fr.hyriode.hydrion.handler.parameter.UUIDHandler;
-import fr.hyriode.hydrion.network.http.HttpContext;
-import fr.hyriode.hydrion.network.http.request.HttpRequest;
-import fr.hyriode.hydrion.response.HydrionPostRequestResponse;
-import fr.hyriode.hydrion.response.HydrionResponse;
+import fr.hyriode.hydrion.api.handler.HydrionHandler;
+import fr.hyriode.hydrion.api.handler.parameter.UUIDHandler;
+import fr.hyriode.hydrion.api.http.HttpContext;
+import fr.hyriode.hydrion.api.http.request.HttpRequest;
+import fr.hyriode.hydrion.api.response.HydrionPostRequestResponse;
+import fr.hyriode.hydrion.api.response.HydrionResponse;
 import io.netty.handler.codec.http.HttpMethod;
 
 import java.util.UUID;
@@ -21,8 +20,7 @@ public class PlayerHandler extends HydrionHandler {
 
     private final PlayerModule playerModule;
 
-    public PlayerHandler(Hydrion hydrion, PlayerModule playerModule) {
-        super(hydrion);
+    public PlayerHandler(PlayerModule playerModule) {
         this.playerModule = playerModule;
 
         this.addParameterHandlers(new UUIDHandler());

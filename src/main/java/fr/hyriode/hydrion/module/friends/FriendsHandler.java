@@ -2,12 +2,12 @@ package fr.hyriode.hydrion.module.friends;
 
 import com.mongodb.BasicDBObject;
 import fr.hyriode.hydrion.Hydrion;
-import fr.hyriode.hydrion.handler.HydrionHandler;
-import fr.hyriode.hydrion.handler.parameter.UUIDHandler;
-import fr.hyriode.hydrion.network.http.HttpContext;
-import fr.hyriode.hydrion.network.http.request.HttpRequest;
-import fr.hyriode.hydrion.response.HydrionPostRequestResponse;
-import fr.hyriode.hydrion.response.HydrionResponse;
+import fr.hyriode.hydrion.api.handler.HydrionHandler;
+import fr.hyriode.hydrion.api.handler.parameter.UUIDHandler;
+import fr.hyriode.hydrion.api.http.HttpContext;
+import fr.hyriode.hydrion.api.http.request.HttpRequest;
+import fr.hyriode.hydrion.api.response.HydrionPostRequestResponse;
+import fr.hyriode.hydrion.api.response.HydrionResponse;
 import io.netty.handler.codec.http.HttpMethod;
 
 import java.util.UUID;
@@ -21,8 +21,7 @@ public class FriendsHandler extends HydrionHandler {
 
     private final FriendsModule friendsManager;
 
-    public FriendsHandler(Hydrion hydrion, FriendsModule friendsManager) {
-        super(hydrion);
+    public FriendsHandler(FriendsModule friendsManager) {
         this.friendsManager = friendsManager;
 
         this.addAcceptedMethods(HttpMethod.GET, HttpMethod.POST);

@@ -5,13 +5,23 @@ networks:
     driver: overlay
 
 services:
-  postgresql:
-    image: postgres:14.2-alpine
-    restart: always
-    ports:
-      - "5432:5432"
+  mongodb:
+    image: mongo:latest
     networks:
       - hydrion
     environment:
-      POSTGRES_USER: hyriode
-      POSTGRES_PASSWORD: p@ssw0rd
+      MONGO_INITDB_ROOT_USERNAME: hyriode
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./data/mongodb:/data/db
+
+  hydrion:
+    image: hydrion:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - hydrion
+    environment:
+      MEMORY: 2G
+    volumes:
+      - ./data/hydrion:/usr/app/data

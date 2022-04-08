@@ -2,7 +2,7 @@ package fr.hyriode.hydrion.module.friends;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import fr.hyriode.hydrion.object.HydrionObject;
+import fr.hyriode.hydrion.api.object.HydrionObject;
 
 import java.util.UUID;
 

@@ -2,9 +2,10 @@ package fr.hyriode.hydrion.network.http;
 
 import com.google.common.io.ByteStreams;
 import fr.hyriode.hydrion.Hydrion;
-import fr.hyriode.hydrion.network.http.request.HttpRequest;
-import fr.hyriode.hydrion.network.http.request.IHttpRequestHandler;
-import fr.hyriode.hydrion.response.error.EndpointError;
+import fr.hyriode.hydrion.api.http.HttpContext;
+import fr.hyriode.hydrion.api.http.request.HttpRequest;
+import fr.hyriode.hydrion.api.http.request.IHttpRequestHandler;
+import fr.hyriode.hydrion.api.response.error.EndpointError;
 import fr.hyriode.hydrion.util.URIUtil;
 import io.netty.handler.codec.http.HttpResponseStatus;
 

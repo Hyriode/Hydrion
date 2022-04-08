@@ -4,7 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import fr.hyriode.hydrion.Hydrion;
-import fr.hyriode.hydrion.module.AbstractModule;
+import fr.hyriode.hydrion.api.module.HydrionModule;
 import fr.hyriode.hydrion.network.http.HttpRouter;
 
 /**
@@ -12,7 +12,7 @@ import fr.hyriode.hydrion.network.http.HttpRouter;
  * Created by AstFaster
  * on 02/04/2022 at 18:32
  */
-public class NetworkModule extends AbstractModule {
+public class NetworkModule extends HydrionModule {
 
     private static final String NAME_KEY = "name";
     private static final String INFO_KEY = "information";
@@ -21,14 +21,8 @@ public class NetworkModule extends AbstractModule {
 
     private MongoDatabase database;
 
-    public NetworkModule(Hydrion hydrion) {
-        super(hydrion);
-    }
-
     protected void init() {
-        final HttpRouter router = this.hydrion.getNetworkManager().getServer().getRouter();
-
-        router.addHandler("/network", new NetworkHandler(this.hydrion, this));
+        this.addHandler("/network", new NetworkHandler(this));
 
         this.database = this.mongoDB.getDatabase("network");
         this.networkCollection = this.database.getCollection("network", BasicDBObject.class);

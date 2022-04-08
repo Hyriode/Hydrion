@@ -1,6 +1,8 @@
 package fr.hyriode.hydrion.network;
 
 import fr.hyriode.hydrion.Hydrion;
+import fr.hyriode.hydrion.api.handler.HydrionHandler;
+import fr.hyriode.hydrion.api.object.network.INetworkManager;
 import fr.hyriode.hydrion.network.http.server.HttpServer;
 
 /**
@@ -8,15 +10,12 @@ import fr.hyriode.hydrion.network.http.server.HttpServer;
  * Created by AstFaster
  * on 24/03/2022 at 17:16
  */
-public class NetworkManager {
+public class NetworkManager implements INetworkManager {
 
     private final HttpServer server;
 
-    private final Hydrion hydrion;
-
     public NetworkManager(Hydrion hydrion) {
-        this.hydrion = hydrion;
-        this.server = new HttpServer(Hydrion.NAME, this.hydrion.getConfiguration().getPort());
+        this.server = new HttpServer(Hydrion.NAME, hydrion.getConfiguration().getPort());
     }
 
     public void start() {
@@ -35,6 +34,11 @@ public class NetworkManager {
 
     public HttpServer getServer() {
         return this.server;
+    }
+
+    @Override
+    public void addHandler(String path, HydrionHandler handler) {
+        this.server.getRouter().addHandler(path, handler);
     }
 
 }

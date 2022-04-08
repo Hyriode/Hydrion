@@ -3,8 +3,7 @@ package fr.hyriode.hydrion.module.player;
 import com.mongodb.BasicDBObject;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import fr.hyriode.hydrion.Hydrion;
-import fr.hyriode.hydrion.module.AbstractModule;
+import fr.hyriode.hydrion.api.module.HydrionModule;
 
 import java.util.UUID;
 
@@ -13,19 +12,15 @@ import java.util.UUID;
  * Created by AstFaster
  * on 02/04/2022 at 18:32
  */
-public class PlayerModule extends AbstractModule {
+public class PlayerModule extends HydrionModule {
 
     private static final String UUID_KEY = "uuid";
 
     private MongoDatabase database;
     private MongoCollection<BasicDBObject> accounts;
 
-    public PlayerModule(Hydrion hydrion) {
-        super(hydrion);
-    }
-
     protected void init() {
-        this.router.addHandler("/player", new PlayerHandler(hydrion, this));
+        this.addHandler("/player", new PlayerHandler(this));
 
         this.database = this.mongoDB.getDatabase("players");
         this.accounts = this.database.getCollection("accounts", BasicDBObject.class);

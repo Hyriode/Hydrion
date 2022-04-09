@@ -40,7 +40,7 @@ publishing {
                 artifactId = 'hydrion-api'
                 version = project.version
                 name = 'HydrionAPI'
-                description = 'The API used to communicate with Hydrion'
+                description = 'The API used to create extension and modules for Hydrion'
                 url = 'https://github.com/Hyriode/Hydrion'
             }
         }

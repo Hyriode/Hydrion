@@ -9,8 +9,11 @@ import fr.hyriode.hydrion.client.exception.InvalidRequestException;
 import fr.hyriode.hydrion.client.http.HttpClient;
 import fr.hyriode.hydrion.client.http.HttpParameters;
 import fr.hyriode.hydrion.client.http.HttpResponse;
+import fr.hyriode.hydrion.client.module.*;
 import fr.hyriode.hydrion.client.response.HydrionResponse;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,133 +24,69 @@ import java.util.concurrent.CompletableFuture;
  */
 public class HydrionClient {
 
-    private static final String PLAYER_ENDPOINT = "player";
-    private static final String RESOURCES_ENDPOINT = "resources/";
-    private static final String GAME_ENDPOINT = RESOURCES_ENDPOINT + "game";
-    private static final String GAMES_ENDPOINT = RESOURCES_ENDPOINT + "games";
-    private static final String FRIENDS_ENDPOINT = "friends";
-    private static final String NETWORK_ENDPOINT = "network";
+    public static final Gson GSON = new Gson();
 
-    private static final String UUID_KEY = "uuid";
-    private static final String NAME_KEY = "name";
+    private final Map<String, ClientModule> modules;
 
-    private static final String BASE_URL = "http://localhost:8080/";
-    private static final Gson GSON = new Gson();
+    private final PlayerModule playerModule;
+    private final FriendsModule friendsModule;
+    private final ResourcesModule resourcesModule;
+    private final NetworkModule networkModule;
 
+    private final String baseUrl;
     private final HttpClient httpClient;
 
-    public HydrionClient(UUID apiKey) {
+    public HydrionClient(String baseUrl, UUID apiKey) {
+        this.baseUrl = baseUrl;
         this.httpClient = new HttpClient(apiKey);
+        this.modules = new HashMap<>();
+
+        this.playerModule = this.addModule("player", new PlayerModule(this));
+        this.friendsModule = this.addModule("friends", new FriendsModule(this));
+        this.resourcesModule = this.addModule("resources", new ResourcesModule(this));
+        this.networkModule = this.addModule("network", new NetworkModule(this));
     }
 
-    public CompletableFuture<HydrionResponse> getPlayer(UUID playerId) {
-        return this.get("player", PLAYER_ENDPOINT, HttpParameters.create().add(UUID_KEY, playerId.toString()));
+    public PlayerModule getPlayerModule() {
+        return this.playerModule;
     }
 
-    public CompletableFuture<HydrionResponse> setPlayer(UUID playerId, String player) {
-        return this.post(PLAYER_ENDPOINT, player, HttpParameters.create().add(UUID_KEY, playerId.toString()));
+    public FriendsModule getFriendsModule() {
+        return this.friendsModule;
     }
 
-    public CompletableFuture<HydrionResponse> getFriends(UUID playerId) {
-        return this.get("friends", FRIENDS_ENDPOINT, HttpParameters.create().add(UUID_KEY, playerId.toString()));
+    public ResourcesModule getResourcesModule() {
+        return this.resourcesModule;
     }
 
-    public CompletableFuture<HydrionResponse> setFriends(UUID playerId, String friends) {
-        return this.post(FRIENDS_ENDPOINT, friends, HttpParameters.create().add(UUID_KEY, playerId.toString()));
+    public NetworkModule getNetworkModule() {
+        return this.networkModule;
     }
 
-    public CompletableFuture<HydrionResponse> getGames() {
-        return this.get("games", GAMES_ENDPOINT);
+    public <T extends ClientModule> T addModule(String name, T module) {
+        this.modules.put(name, module);
+        return module;
     }
 
-    public CompletableFuture<HydrionResponse> getGame(String name) {
-        return this.get("game", GAME_ENDPOINT, HttpParameters.create().add(NAME_KEY, name));
-    }
-
-    public CompletableFuture<HydrionResponse> addGame(String name, String game) {
-        return this.post(GAME_ENDPOINT, game, HttpParameters.create().add(NAME_KEY, name));
-    }
-
-    public CompletableFuture<HydrionResponse> removeGame(String name) {
-        return this.delete(GAME_ENDPOINT, HttpParameters.create().add(NAME_KEY, name));
-    }
-
-    public CompletableFuture<HydrionResponse> getNetwork() {
-        return this.get("network", NETWORK_ENDPOINT);
-    }
-
-    public CompletableFuture<HydrionResponse> setNetwork(String network) {
-        return this.post(NETWORK_ENDPOINT, network);
-    }
-
-    private String createUrl(String endpoint, HttpParameters parameters) {
-        String url = BASE_URL + endpoint;
-
-        if (parameters != null) {
-            url += parameters.asQueryString();
+    public <T extends ClientModule> T getModule(Class<T> clazz) {
+        for (ClientModule module : this.modules.values()) {
+            if (module.getClass() == clazz) {
+                return clazz.cast(module);
+            }
         }
-
-        return url;
+        return null;
     }
 
-    private CompletableFuture<HydrionResponse> get(String contentName, String endpoint, HttpParameters parameters) {
-        return this.httpClient.get(this.createUrl(endpoint, parameters))
-                .thenApply(this::checkHttpResponse)
-                .thenApply(response -> this.createResponse(response, contentName));
+    public ClientModule getModule(String name) {
+        return this.modules.get(name);
     }
 
-    private CompletableFuture<HydrionResponse> get(String contentName, String endpoint) {
-        return this.get(contentName, endpoint, null);
+    public String getBaseUrl() {
+        return this.baseUrl;
     }
 
-    private CompletableFuture<HydrionResponse> post(String endpoint, String content, HttpParameters parameters) {
-        return this.httpClient.post(this.createUrl(endpoint, parameters), content)
-                .thenApply(this::checkHttpResponse)
-                .thenApply(response -> this.createResponse(response, "message"));
-    }
-
-    private CompletableFuture<HydrionResponse> post(String endpoint, String content) {
-        return this.post(endpoint, content, null);
-    }
-
-    private CompletableFuture<HydrionResponse> delete(String endpoint, HttpParameters parameters) {
-        return this.httpClient.delete(this.createUrl(endpoint, parameters))
-                .thenApply(this::checkHttpResponse)
-                .thenApply(response -> this.createResponse(response, "message"));
-    }
-
-    private CompletableFuture<HydrionResponse> delete(String endpoint) {
-        return this.delete(endpoint, null);
-    }
-
-    private HttpResponse checkHttpResponse(HttpResponse response) {
-        if (response.getStatusCode() == 200) {
-            return response;
-        }
-
-        String cause;
-        try {
-            cause = GSON.fromJson(response.getBody(), JsonObject.class)
-                    .get("cause")
-                    .getAsString();
-        } catch (JsonSyntaxException ignored) {
-            cause = "Unknown cause (response body is not a json)";
-        }
-
-        throw new InvalidCodeException(response.getStatusCode(), cause);
-    }
-
-    private HydrionResponse createResponse(HttpResponse httpResponse, String contentName) {
-        final JsonObject jsonObject = GSON.fromJson(httpResponse.getBody(), JsonObject.class);
-        final JsonElement contentElement = jsonObject.get(contentName);
-        final String content = !contentElement.isJsonNull() ? contentElement.toString() : null;
-        final HydrionResponse response = new HydrionResponse(jsonObject.get("success").getAsBoolean(), content);
-
-        if (!response.isSuccess()) {
-            throw new InvalidRequestException(response.getContent());
-        }
-
-        return response;
+    public HttpClient getHttpClient() {
+        return this.httpClient;
     }
 
 }

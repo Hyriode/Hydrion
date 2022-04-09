@@ -3,12 +3,11 @@ package fr.hyriode.hydrion.client.test;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import fr.hyriode.hydrion.client.HydrionClient;
-import fr.hyriode.hydrion.client.response.HydrionResponse;
+import fr.hyriode.hydrion.client.module.ResourcesModule;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 
 /**
  * Project: Hydrion
@@ -18,18 +17,12 @@ import java.util.function.BiConsumer;
 public class Test {
 
     public static void main(String[] args) {
-        final HydrionClient hydrionClient = new HydrionClient(UUID.fromString("92109827-fdcd-4b82-9d74-2d2050f13482"));
+        final HydrionClient hydrionClient = new HydrionClient("http://localhost:8080", UUID.fromString("92109827-fdcd-4b82-9d74-2d2050f13482"));
 
-        final long before = System.currentTimeMillis();
-
-        hydrionClient.getPlayer(UUID.fromString("c7e68fae-32af-47ce-afbf-ee57e051a91f")).whenComplete((response, throwable) -> {
-            System.out.println(System.currentTimeMillis() - before);
-            System.out.println(response.getContent());
-        });
-        /**testPlayer(hydrionClient);
+        testPlayer(hydrionClient);
         testGames(hydrionClient);
         testFriends(hydrionClient);
-        testNetwork(hydrionClient);*/
+        testNetwork(hydrionClient);
     }
 
     private static void testPlayer(HydrionClient client) {
@@ -41,7 +34,7 @@ public class Test {
 
         final long before = System.currentTimeMillis();
 
-        client.setPlayer(uuid, player.toString()).whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
+        client.getPlayerModule().setPlayer(uuid, player.toString()).whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
     }
 
     public static void testGames(HydrionClient client) {
@@ -58,9 +51,10 @@ public class Test {
         game.add("types", types);
 
         final long before = System.currentTimeMillis();
+        final ResourcesModule module = client.getResourcesModule();
 
-        client.addGame("BedWars", game.toString()).whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
-        client.removeGame("BedWars").whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
+        module.addGame("BedWars", game.toString()).whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
+        module.removeGame("BedWars").whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
     }
 
     public static void testFriends(HydrionClient client) {
@@ -77,7 +71,7 @@ public class Test {
 
         final long before = System.currentTimeMillis();
 
-        client.setFriends(uuid, friends.toString()).whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
+        client.getFriendsModule().setFriends(uuid, friends.toString()).whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
     }
 
     public static void testNetwork(HydrionClient client) {
@@ -93,7 +87,7 @@ public class Test {
 
         final long before = System.currentTimeMillis();
 
-        client.setNetwork(network.toString()).whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
+        client.getNetworkModule().setNetwork(network.toString()).whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
     }
 
 }

@@ -41,7 +41,7 @@ public abstract class HydrionHandler implements IHttpRequestHandler {
 
     @Override
     public void onRequest(HttpRequest request, HttpContext ctx) {
-        if (!request.getHeaders().contains(API_KEY_HEADER_KEY)) {
+        /*if (!request.getHeaders().contains(API_KEY_HEADER_KEY)) {
             ctx.text(new HeaderError(API_KEY_HEADER_KEY).toJson());
             return;
         }
@@ -51,7 +51,7 @@ public abstract class HydrionHandler implements IHttpRequestHandler {
         if (!UUIDUtil.isUUID(apiKeyStr) || !UUID.fromString(apiKeyStr).equals(HydrionAPI.get().getAPIKey())) {
             ctx.text(new HydrionError("Invalid API key").toJson());
             return;
-        }
+        }*/
 
         HydrionResponse response = null;
 

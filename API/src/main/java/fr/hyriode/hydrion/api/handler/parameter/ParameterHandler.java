@@ -11,6 +11,7 @@ import fr.hyriode.hydrion.api.response.error.HydrionError;
 public abstract class ParameterHandler<T> {
 
     protected final String parameterKey;
+    private boolean optional;
 
     public ParameterHandler(String parameterKey) {
         this.parameterKey = parameterKey;
@@ -22,6 +23,15 @@ public abstract class ParameterHandler<T> {
 
     public String getParameterKey() {
         return this.parameterKey;
+    }
+
+    public boolean isOptional() {
+        return this.optional;
+    }
+
+    public ParameterHandler<T> optional() {
+        this.optional = true;
+        return this;
     }
 
 }

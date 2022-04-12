@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class HttpRequest {
 
-    private final Map<Class<?>, List<Object>> parameterObjects;
+    private final Map<Class<?>, Map<String, Object>> parameterObjects;
 
     private final String uri;
     private final HttpMethod method;
@@ -56,14 +56,10 @@ public class HttpRequest {
     }
 
 
-    public <T> T getParameter(int index, Class<T> clazz) {
-        final List<Object> objects = this.parameterObjects.get(clazz);
+    public <T> T getParameter(String key, Class<T> clazz) {
+        final Map<String, Object> objects = this.parameterObjects.get(clazz);
 
-        return objects == null ? null : clazz.cast(objects.get(index));
-    }
-
-    public <T> T getParameter(Class<T> clazz) {
-        return this.getParameter(0, clazz);
+        return objects == null ? null : clazz.cast(objects.get(key));
     }
 
     public List<HttpRequestParameter> getParameters() {
@@ -78,7 +74,7 @@ public class HttpRequest {
         return this.content;
     }
 
-    public Map<Class<?>, List<Object>> getParameterObjects() {
+    public Map<Class<?>, Map<String, Object>> getParameterObjects() {
         return this.parameterObjects;
     }
 

@@ -23,7 +23,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel ch) {
         ch.pipeline().
                 addLast("codec", new HttpServerCodec())
-                .addLast("aggregator", new HttpObjectAggregator(8192))
+                .addLast("aggregator", new HttpObjectAggregator(Integer.MAX_VALUE))
                 .addLast("handler", new HttpServerHandler(this.router));
     }
 

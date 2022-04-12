@@ -15,7 +15,7 @@ import java.util.UUID;
 public class UUIDHandler extends ParameterHandler<UUID> {
 
     public UUIDHandler() {
-        super("uuid");
+        super(ParameterKeys.UUID);
     }
 
     @Override

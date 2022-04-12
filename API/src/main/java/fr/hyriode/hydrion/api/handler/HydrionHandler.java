@@ -41,7 +41,7 @@ public abstract class HydrionHandler implements IHttpRequestHandler {
 
     @Override
     public void onRequest(HttpRequest request, HttpContext ctx) {
-        /*if (!request.getHeaders().contains(API_KEY_HEADER_KEY)) {
+        if (!request.getHeaders().contains(API_KEY_HEADER_KEY)) {
             ctx.text(new HeaderError(API_KEY_HEADER_KEY).toJson());
             return;
         }
@@ -51,14 +51,14 @@ public abstract class HydrionHandler implements IHttpRequestHandler {
         if (!UUIDUtil.isUUID(apiKeyStr) || !UUID.fromString(apiKeyStr).equals(HydrionAPI.get().getAPIKey())) {
             ctx.text(new HydrionError("Invalid API key").toJson());
             return;
-        }*/
+        }
 
         HydrionResponse response = null;
 
         for (ParameterHandler<?> handler : this.parameterHandlers) {
             final String key = handler.getParameterKey();
 
-            if (!request.hasParameter(key)) {
+            if (!request.hasParameter(key) && !handler.isOptional()) {
                 ctx.text(new ParameterError(key).toJson(), HttpResponseStatus.BAD_REQUEST);
                 return;
             }
@@ -73,15 +73,15 @@ public abstract class HydrionHandler implements IHttpRequestHandler {
             final Object object = handler.get(request);
 
             if (object != null) {
-                final Map<Class<?>, List<Object>> parameterObjects = request.getParameterObjects();
+                final Map<Class<?>, Map<String, Object>> parameterObjects = request.getParameterObjects();
                 final Class<?> clazz = object.getClass();
 
-                List<Object> objects = parameterObjects.get(clazz);
+                Map<String, Object> objects = parameterObjects.get(clazz);
                 if (objects == null) {
-                    objects = new ArrayList<>();
+                    objects = new HashMap<>();
                 }
 
-                objects.add(object);
+                objects.put(key, object);
 
                 parameterObjects.put(clazz, objects);
             }

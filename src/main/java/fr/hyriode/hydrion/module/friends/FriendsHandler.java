@@ -3,6 +3,7 @@ package fr.hyriode.hydrion.module.friends;
 import com.mongodb.BasicDBObject;
 import fr.hyriode.hydrion.Hydrion;
 import fr.hyriode.hydrion.api.handler.HydrionHandler;
+import fr.hyriode.hydrion.api.handler.parameter.ParameterKeys;
 import fr.hyriode.hydrion.api.handler.parameter.UUIDHandler;
 import fr.hyriode.hydrion.api.http.HttpContext;
 import fr.hyriode.hydrion.api.http.request.HttpRequest;
@@ -26,8 +27,8 @@ public class FriendsHandler extends HydrionHandler {
 
         this.addAcceptedMethods(HttpMethod.GET, HttpMethod.POST);
         this.addParameterHandlers(new UUIDHandler());
-        this.addMethodHandler(HttpMethod.GET, (request, ctx) -> this.get(request.getParameter(UUID.class)));
-        this.addMethodHandler(HttpMethod.POST, (request, ctx) -> this.post(request.getParameter(UUID.class), request, ctx));
+        this.addMethodHandler(HttpMethod.GET, (request, ctx) -> this.get(request.getParameter(ParameterKeys.UUID, UUID.class)));
+        this.addMethodHandler(HttpMethod.POST, (request, ctx) -> this.post(request.getParameter(ParameterKeys.UUID, UUID.class), request, ctx));
     }
 
     private HydrionResponse get(UUID playerId) {

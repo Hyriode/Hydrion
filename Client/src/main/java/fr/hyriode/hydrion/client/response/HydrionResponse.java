@@ -1,5 +1,7 @@
 package fr.hyriode.hydrion.client.response;
 
+import com.google.gson.JsonElement;
+
 /**
  * Project: Hydrion
  * Created by AstFaster
@@ -8,9 +10,9 @@ package fr.hyriode.hydrion.client.response;
 public class HydrionResponse {
 
     private final boolean success;
-    private final String content;
+    private final JsonElement content;
 
-    public HydrionResponse(boolean success, String content) {
+    public HydrionResponse(boolean success, JsonElement content) {
         this.success = success;
         this.content = content;
     }
@@ -19,7 +21,7 @@ public class HydrionResponse {
         return this.success;
     }
 
-    public String getContent() {
+    public JsonElement getContent() {
         return this.content;
     }
 

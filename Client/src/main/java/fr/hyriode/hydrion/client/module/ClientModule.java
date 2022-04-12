@@ -90,12 +90,11 @@ public abstract class ClientModule {
 
     private HydrionResponse createResponse(HttpResponse httpResponse, String contentName) {
         final JsonObject jsonObject = HydrionClient.GSON.fromJson(httpResponse.getBody(), JsonObject.class);
-        final JsonElement contentElement = jsonObject.get(contentName);
-        final String content = !contentElement.isJsonNull() ? contentElement.getAsString() : null;
+        final JsonElement content = jsonObject.get(contentName);
         final HydrionResponse response = new HydrionResponse(jsonObject.get("success").getAsBoolean(), content);
 
         if (!response.isSuccess()) {
-            throw new InvalidRequestException(response.getContent());
+            throw new InvalidRequestException(content.getAsString());
         }
 
         return response;

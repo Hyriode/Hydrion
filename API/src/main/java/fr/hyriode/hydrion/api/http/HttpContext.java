@@ -56,7 +56,6 @@ public class HttpContext {
     }
 
     public void error(String msg, String contentType, HttpResponseStatus status) {
-        System.out.println("Error: " + status);
         final ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
         final byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
 

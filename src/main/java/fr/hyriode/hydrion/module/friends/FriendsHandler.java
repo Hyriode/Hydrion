@@ -25,7 +25,6 @@ public class FriendsHandler extends HydrionHandler {
     public FriendsHandler(FriendsModule friendsManager) {
         this.friendsManager = friendsManager;
 
-        this.addAcceptedMethods(HttpMethod.GET, HttpMethod.POST);
         this.addParameterHandlers(new UUIDHandler());
         this.addMethodHandler(HttpMethod.GET, (request, ctx) -> this.get(request.getParameter(ParameterKeys.UUID, UUID.class)));
         this.addMethodHandler(HttpMethod.POST, (request, ctx) -> this.post(request.getParameter(ParameterKeys.UUID, UUID.class), request, ctx));
@@ -40,7 +39,7 @@ public class FriendsHandler extends HydrionHandler {
             final BasicDBObject dbObject = BasicDBObject.parse(json);
 
             if (this.friendsManager.getFriends(playerId) == null) {
-                this.friendsManager.addFriends(playerId, dbObject);
+                this.friendsManager.addFriends(dbObject);
             } else {
                 this.friendsManager.updateFriends(playerId, dbObject);
             }

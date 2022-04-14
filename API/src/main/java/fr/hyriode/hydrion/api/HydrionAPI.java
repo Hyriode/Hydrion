@@ -8,6 +8,8 @@ import fr.hyriode.hydrion.api.module.IModuleManager;
 import fr.hyriode.hydrion.api.object.network.INetworkManager;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Project: Hydrion
@@ -19,6 +21,7 @@ public abstract class HydrionAPI {
     public static final Gson GSON = new GsonBuilder()
             .serializeNulls()
             .create();
+    public static final ExecutorService POOL = Executors.newCachedThreadPool();
 
     private static HydrionAPI instance;
 

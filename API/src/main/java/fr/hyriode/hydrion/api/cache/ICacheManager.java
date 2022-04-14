@@ -1,7 +1,5 @@
 package fr.hyriode.hydrion.api.cache;
 
-import com.mongodb.BasicDBObject;
-
 /**
  * Project: Hydrion
  * Created by AstFaster
@@ -9,14 +7,18 @@ import com.mongodb.BasicDBObject;
  */
 public interface ICacheManager {
 
-    void addCachedData(Object key, CachedData data, boolean replace);
+    void addCachedData(String key, CachedData<?> data, boolean replace);
 
-    void addCachedData(Object key, BasicDBObject dbObject, boolean replace);
+    void addCachedData(String key, Object value, boolean replace);
 
-    void addCachedData(Object key, BasicDBObject dbObject);
+    void addCachedData(String key, Object value);
 
-    void removeCachedData(Object key);
+    void removeCachedData(String key);
 
-    CachedData getCachedData(Object key);
+    CachedData<?> getCachedData(String key);
+
+    CachedDBObject getCachedDBObject(String key, String value);
+
+    CachedDBObjectList getCachedDBObjectList(String key);
 
 }

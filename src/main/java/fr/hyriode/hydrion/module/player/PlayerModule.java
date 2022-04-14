@@ -26,8 +26,8 @@ public class PlayerModule extends HydrionModule {
         this.accounts = this.database.getCollection("accounts", BasicDBObject.class);
     }
 
-    public void addPlayer(UUID uuid, BasicDBObject dbObject) {
-        this.addData(this.accounts, uuid.toString(), dbObject);
+    public void addPlayer(BasicDBObject dbObject) {
+        this.addData(this.accounts, dbObject);
     }
 
     public void updatePlayer(UUID uuid, BasicDBObject dbObject) {

@@ -1,4 +1,4 @@
-package fr.hyriode.hydrion.api.extension;
+package fr.hyriode.hydrion.api.http.extension;
 
 /**
  * Project: Hydrion

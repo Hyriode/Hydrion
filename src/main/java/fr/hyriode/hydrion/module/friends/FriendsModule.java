@@ -27,16 +27,16 @@ public class FriendsModule extends HydrionModule {
         this.friends = HydrionAPI.get().getModuleManager().getModule(PlayerModule.class).getDatabase().getCollection("friends", BasicDBObject.class);
     }
 
-    public void addFriends(UUID uuid, BasicDBObject dbObject) {
-        this.addData(this.friends, uuid, dbObject);
+    public void addFriends(BasicDBObject dbObject) {
+        this.addData(this.friends, dbObject);
     }
 
     public void updateFriends(UUID uuid, BasicDBObject dbObject) {
-        this.updateData(this.friends, UUID_KEY, uuid, dbObject);
+        this.updateData(this.friends, UUID_KEY, uuid.toString(), dbObject);
     }
 
     public BasicDBObject getFriends(UUID uuid) {
-        return this.getData(this.friends, UUID_KEY, uuid);
+        return this.getData(this.friends, UUID_KEY, uuid.toString());
     }
 
     public MongoCollection<BasicDBObject> getFriends() {

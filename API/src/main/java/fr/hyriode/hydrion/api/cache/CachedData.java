@@ -1,7 +1,5 @@
 package fr.hyriode.hydrion.api.cache;
 
-import com.mongodb.BasicDBObject;
-
 import java.util.concurrent.ScheduledFuture;
 
 /**
@@ -9,24 +7,30 @@ import java.util.concurrent.ScheduledFuture;
  * Created by AstFaster
  * on 06/04/2022 at 17:41
  */
-public class CachedData {
+public class CachedData<T> {
+
+    public static final int EXPIRATION_TIME = 600;
 
     private ScheduledFuture<?> task;
 
-    private final int expireTime;
-    private final BasicDBObject dbObject;
+    private final int expirationTime;
+    private final T value;
 
-    public CachedData(int expireTime, BasicDBObject dbObject) {
-        this.expireTime = expireTime;
-        this.dbObject = dbObject;
+    public CachedData(int expirationTime, T value) {
+        this.expirationTime = expirationTime;
+        this.value = value;
     }
 
-    public int getExpireTime() {
-        return this.expireTime;
+    public CachedData(T value) {
+        this(EXPIRATION_TIME, value);
     }
 
-    public BasicDBObject getDBObject() {
-        return this.dbObject;
+    public int getExpirationTime() {
+        return this.expirationTime;
+    }
+
+    public T getValue() {
+        return value;
     }
 
     public ScheduledFuture<?> getTask() {

@@ -4,10 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import fr.hyriode.hydrion.client.HydrionClient;
 import fr.hyriode.hydrion.client.module.ResourcesModule;
+import fr.hyriode.hydrion.client.response.HydrionResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 /**
  * Project: Hydrion
@@ -17,12 +19,13 @@ import java.util.UUID;
 public class Test {
 
     public static void main(String[] args) {
-        final HydrionClient hydrionClient = new HydrionClient("http://localhost:8080", UUID.fromString("92109827-fdcd-4b82-9d74-2d2050f13482"));
+        final HydrionClient hydrionClient = new HydrionClient("http://localhost:8080/", UUID.fromString("92109827-fdcd-4b82-9d74-2d2050f13482"));
 
         testPlayer(hydrionClient);
         testGames(hydrionClient);
         testFriends(hydrionClient);
         testNetwork(hydrionClient);
+        testBoosters(hydrionClient);
     }
 
     private static void testPlayer(HydrionClient client) {
@@ -88,6 +91,30 @@ public class Test {
         final long before = System.currentTimeMillis();
 
         client.getNetworkModule().setNetwork(network.toString()).whenComplete((response, throwable) -> System.out.println("Request took " + (System.currentTimeMillis() - before) + "ms"));
+    }
+
+    private static void testBoosters(HydrionClient client) {
+        final JsonObject booster = new JsonObject();
+        final UUID identifier = UUID.randomUUID();
+
+        booster.addProperty("identifier", identifier.toString());
+        booster.addProperty("owner", UUID.randomUUID().toString());
+        booster.addProperty("activatedDate", System.currentTimeMillis());
+        booster.addProperty("purchasedDate", System.currentTimeMillis());
+
+        final long beforePost = System.currentTimeMillis();
+
+        client.getBoostersModule().addBooster(identifier, booster.toString()).whenComplete((response, throwable) -> {
+            System.out.println(response.getContent().toString());
+            System.out.println("Request took " + (System.currentTimeMillis() - beforePost) + "ms");
+        }).exceptionally(throwable -> {
+            try {
+                throw throwable;
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
     }
 
 }

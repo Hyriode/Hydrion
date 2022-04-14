@@ -1,9 +1,12 @@
 package fr.hyriode.hydrion.cache;
 
 import com.mongodb.BasicDBObject;
+import fr.hyriode.hydrion.api.cache.CachedDBObject;
+import fr.hyriode.hydrion.api.cache.CachedDBObjectList;
 import fr.hyriode.hydrion.api.cache.CachedData;
 import fr.hyriode.hydrion.api.cache.ICacheManager;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -17,10 +20,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class CacheManager implements ICacheManager {
 
-    private static final int EXPIRE_TIME = 300;
+    private static final int EXPIRE_TIME = 600;
 
     private final ScheduledExecutorService scheduler;
-    private final Map<Object, CachedData> cachedData;
+    private final Map<String, CachedData<?>> cachedData;
 
     public CacheManager() {
         this.scheduler = Executors.newScheduledThreadPool(4);
@@ -28,8 +31,8 @@ public class CacheManager implements ICacheManager {
     }
 
     @Override
-    public void addCachedData(Object key, CachedData data, boolean replace) {
-        final CachedData oldData = this.getCachedData(key);
+    public void addCachedData(String key, CachedData<?> data, boolean replace) {
+        final CachedData<?> oldData = this.getCachedData(key);
 
         if (oldData != null && replace) {
             this.removeCachedData(key);
@@ -37,31 +40,59 @@ public class CacheManager implements ICacheManager {
 
         data.setTask(this.scheduler.schedule(() -> {
             this.cachedData.remove(key);
-        }, data.getExpireTime(), TimeUnit.SECONDS));
+        }, data.getExpirationTime(), TimeUnit.SECONDS));
 
         this.cachedData.put(key, data);
     }
 
     @Override
-    public void addCachedData(Object key, BasicDBObject dbObject, boolean replace) {
-        this.addCachedData(key, new CachedData(EXPIRE_TIME, dbObject), replace);
+    public void addCachedData(String key, Object object, boolean replace) {
+        this.addCachedData(key, new CachedData<>(EXPIRE_TIME, object), replace);
     }
 
     @Override
-    public void addCachedData(Object key, BasicDBObject dbObject) {
-        this.addCachedData(key, new CachedData(EXPIRE_TIME, dbObject), false);
+    public void addCachedData(String key, Object object) {
+        this.addCachedData(key, new CachedData<>(EXPIRE_TIME, object), false);
     }
 
     @Override
-    public void removeCachedData(Object key) {
+    public void removeCachedData(String key) {
         if (key != null) {
             this.cachedData.remove(key).getTask().cancel(true);
         }
     }
 
     @Override
-    public CachedData getCachedData(Object key) {
+    public CachedData<?> getCachedData(String key) {
         return this.cachedData.get(key);
+    }
+
+    @Override
+    public CachedDBObject getCachedDBObject(String key, String value) {
+        for (CachedData<?> data : this.cachedData.values()) {
+            if (data instanceof final CachedDBObject cachedData) {
+                final BasicDBObject dbObject = cachedData.getValue();
+
+                if (dbObject != null) {
+                    final Object object = dbObject.get(key);
+
+                    if (object != null && object.toString().equals(value)) {
+                        return cachedData;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public CachedDBObjectList getCachedDBObjectList(String key) {
+        final CachedData<?> data = this.cachedData.get(key);
+
+        if (data instanceof final CachedDBObjectList cachedData) {
+            return cachedData;
+        }
+        return null;
     }
 
 }

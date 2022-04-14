@@ -38,7 +38,7 @@ public class PlayerHandler extends HydrionHandler {
             final BasicDBObject dbObject = BasicDBObject.parse(json);
 
             if (this.playerModule.getPlayer(playerId) == null) {
-                this.playerModule.addPlayer(playerId, dbObject);
+                this.playerModule.addPlayer(dbObject);
             } else {
                 this.playerModule.updatePlayer(playerId, dbObject);
             }

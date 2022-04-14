@@ -2,10 +2,12 @@ package fr.hyriode.hydrion.module;
 
 import fr.hyriode.hydrion.api.module.HydrionModule;
 import fr.hyriode.hydrion.api.module.IModuleManager;
+import fr.hyriode.hydrion.module.boosters.BoostersModule;
 import fr.hyriode.hydrion.module.friends.FriendsModule;
 import fr.hyriode.hydrion.module.network.NetworkModule;
 import fr.hyriode.hydrion.module.player.PlayerModule;
 import fr.hyriode.hydrion.module.resources.ResourcesModule;
+import fr.hyriode.hydrion.module.uuid.UUIDFetcherModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +32,8 @@ public class ModuleManager implements IModuleManager {
         this.registerModule("friends", new FriendsModule());
         this.registerModule("resources", new ResourcesModule());
         this.registerModule("network", new NetworkModule());
+        this.registerModule("boosters", new BoostersModule());
+        this.registerModule("uuid-fetcher", new UUIDFetcherModule());
     }
 
     @Override

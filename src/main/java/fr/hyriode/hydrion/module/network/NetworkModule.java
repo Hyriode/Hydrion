@@ -7,15 +7,14 @@ import fr.hyriode.hydrion.Hydrion;
 import fr.hyriode.hydrion.api.module.HydrionModule;
 import fr.hyriode.hydrion.network.http.HttpRouter;
 
+import java.util.List;
+
 /**
  * Project: Hydrion
  * Created by AstFaster
  * on 02/04/2022 at 18:32
  */
 public class NetworkModule extends HydrionModule {
-
-    private static final String NAME_KEY = "name";
-    private static final String INFO_KEY = "information";
 
     private MongoCollection<BasicDBObject> networkCollection;
 
@@ -29,11 +28,16 @@ public class NetworkModule extends HydrionModule {
     }
 
     public void setNetwork(BasicDBObject dbObject) {
-        this.addData(this.networkCollection, INFO_KEY, dbObject);
+        this.addData(this.networkCollection, dbObject);
     }
 
     public BasicDBObject getNetwork() {
-        return this.getData(this.networkCollection, NAME_KEY, INFO_KEY);
+        final List<BasicDBObject> all = this.getAllData(this.networkCollection, "network");
+
+        if (all != null && all.size() > 0) {
+            return all.get(0);
+        }
+        return null;
     }
 
     public MongoCollection<BasicDBObject> getNetworkCollection() {

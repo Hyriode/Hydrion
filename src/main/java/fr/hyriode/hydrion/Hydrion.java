@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,7 +35,6 @@ import java.util.logging.Logger;
 public class Hydrion {
 
     public static final String NAME = "Hydrion";
-
     public static final Path DATA_FOLDER = Paths.get("data");
 
     /** Logger */

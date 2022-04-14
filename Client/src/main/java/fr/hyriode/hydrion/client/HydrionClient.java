@@ -32,6 +32,8 @@ public class HydrionClient {
     private final FriendsModule friendsModule;
     private final ResourcesModule resourcesModule;
     private final NetworkModule networkModule;
+    private final BoostersModule boostersModule;
+    private final UUIDModule uuidModule;
 
     private final String baseUrl;
     private final HttpClient httpClient;
@@ -45,6 +47,8 @@ public class HydrionClient {
         this.friendsModule = this.addModule("friends", new FriendsModule(this));
         this.resourcesModule = this.addModule("resources", new ResourcesModule(this));
         this.networkModule = this.addModule("network", new NetworkModule(this));
+        this.boostersModule = this.addModule("boosters", new BoostersModule(this));
+        this.uuidModule = this.addModule("uuid-fetcher", new UUIDModule(this));
     }
 
     public PlayerModule getPlayerModule() {
@@ -61,6 +65,14 @@ public class HydrionClient {
 
     public NetworkModule getNetworkModule() {
         return this.networkModule;
+    }
+
+    public BoostersModule getBoostersModule() {
+        return this.boostersModule;
+    }
+
+    public UUIDModule getUUIDModule() {
+        return this.uuidModule;
     }
 
     public <T extends ClientModule> T addModule(String name, T module) {

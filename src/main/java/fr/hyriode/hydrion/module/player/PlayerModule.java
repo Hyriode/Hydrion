@@ -19,6 +19,10 @@ public class PlayerModule extends HydrionModule {
     private MongoDatabase database;
     private MongoCollection<BasicDBObject> accounts;
 
+    public PlayerModule() {
+        super("players");
+    }
+
     protected void init() {
         this.addHandler("/player", new PlayerHandler(this));
 

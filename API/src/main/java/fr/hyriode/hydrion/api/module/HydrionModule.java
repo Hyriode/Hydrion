@@ -3,19 +3,15 @@ package fr.hyriode.hydrion.api.module;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.InsertOneResult;
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import fr.hyriode.hydrion.api.HydrionAPI;
 import fr.hyriode.hydrion.api.cache.CachedDBObject;
 import fr.hyriode.hydrion.api.cache.CachedDBObjectList;
-import fr.hyriode.hydrion.api.cache.CachedData;
 import fr.hyriode.hydrion.api.cache.ICacheManager;
 import fr.hyriode.hydrion.api.database.mongodb.MongoDB;
 import fr.hyriode.hydrion.api.database.mongodb.subscriber.CallbackSubscriber;
 import fr.hyriode.hydrion.api.database.mongodb.subscriber.DataCallbackSubscriber;
 import fr.hyriode.hydrion.api.database.mongodb.subscriber.DataSubscriber;
-import fr.hyriode.hydrion.api.database.mongodb.subscriber.OperationSubscriber;
 import fr.hyriode.hydrion.api.handler.HydrionHandler;
 import org.bson.BsonValue;
 
@@ -33,7 +29,10 @@ public abstract class HydrionModule {
     protected final MongoDB mongoDB;
     protected final ICacheManager cacheManager;
 
-    public HydrionModule() {
+    protected final String cachedDataKey;
+
+    public HydrionModule(String cachedDataKey) {
+        this.cachedDataKey = cachedDataKey + ":";
         final HydrionAPI api = HydrionAPI.get();
 
         this.mongoDB = api.getMongoDB();
@@ -58,16 +57,10 @@ public abstract class HydrionModule {
                 final BsonValue insertedId = result.getInsertedId();
 
                 if (insertedId != null) {
-                    this.cacheManager.addCachedData(insertedId.asObjectId().getValue().toString(), new CachedDBObject(dbObject), true);
+                    this.cacheManager.addCachedData(this.cachedDataKey + insertedId.asObjectId().getValue().toString(), new CachedDBObject(dbObject), true);
                 }
             });
         }
-    }
-
-    protected void addData(MongoCollection<BasicDBObject> collection, String cachedDataKey, BasicDBObject dbObject) {
-        collection.insertOne(dbObject).subscribe(new OperationSubscriber<>());
-
-        this.cacheManager.addCachedData(cachedDataKey, new CachedDBObject(dbObject), true);
     }
 
     protected void removeData(MongoCollection<BasicDBObject> collection, String key, String value) {
@@ -77,7 +70,7 @@ public abstract class HydrionModule {
 
         subscriber.whenComplete(dbObject -> {
             if (dbObject != null) {
-                this.cacheManager.removeCachedData(dbObject.getObjectId(ID).toString());
+                this.cacheManager.removeCachedData(this.cachedDataKey + dbObject.getObjectId(ID).toString());
             }
         });
     }
@@ -90,14 +83,14 @@ public abstract class HydrionModule {
         if (dbObject != null) {
             subscriber.whenComplete(result -> {
                 if (result != null) {
-                    this.cacheManager.addCachedData(result.getObjectId(ID).toString(), new CachedDBObject(dbObject), true);
+                    this.cacheManager.addCachedData(this.cachedDataKey + result.getObjectId(ID).toString(), new CachedDBObject(dbObject), true);
                 }
             });
         }
     }
 
     protected BasicDBObject getData(MongoCollection<BasicDBObject> collection, String key, String value) {
-        final CachedDBObject cachedData = this.cacheManager.getCachedDBObject(key, value);
+        final CachedDBObject cachedData = this.cacheManager.getCachedDBObject(this.cachedDataKey, key, value);
 
         if (cachedData != null) {
             final BasicDBObject dbObject = cachedData.getValue();

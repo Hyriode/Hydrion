@@ -20,10 +20,10 @@ import java.util.UUID;
  */
 public class FriendsHandler extends HydrionHandler {
 
-    private final FriendsModule friendsManager;
+    private final FriendsModule friendsModule;
 
-    public FriendsHandler(FriendsModule friendsManager) {
-        this.friendsManager = friendsManager;
+    public FriendsHandler(FriendsModule friendsModule) {
+        this.friendsModule = friendsModule;
 
         this.addParameterHandlers(new UUIDHandler());
         this.addMethodHandler(HttpMethod.GET, (request, ctx) -> this.get(request.getParameter(ParameterKeys.UUID, UUID.class)));
@@ -31,17 +31,17 @@ public class FriendsHandler extends HydrionHandler {
     }
 
     private HydrionResponse get(UUID playerId) {
-        return new HydrionResponse(true, new FriendsObject(playerId, this.friendsManager.getFriends(playerId)));
+        return new HydrionResponse(true, new FriendsObject(playerId, this.friendsModule.getFriends(playerId)));
     }
 
     private HydrionResponse post(UUID playerId, HttpRequest request, HttpContext ctx) {
         return this.handleJsonPost(request, ctx, json -> {
             final BasicDBObject dbObject = BasicDBObject.parse(json);
 
-            if (this.friendsManager.getFriends(playerId) == null) {
-                this.friendsManager.addFriends(dbObject);
+            if (this.friendsModule.getFriends(playerId) == null) {
+                this.friendsModule.addFriends(dbObject);
             } else {
-                this.friendsManager.updateFriends(playerId, dbObject);
+                this.friendsModule.updateFriends(playerId, dbObject);
             }
             return new HydrionPostRequestResponse();
         });

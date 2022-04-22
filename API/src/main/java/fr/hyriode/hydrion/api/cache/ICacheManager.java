@@ -17,7 +17,7 @@ public interface ICacheManager {
 
     CachedData<?> getCachedData(String key);
 
-    CachedDBObject getCachedDBObject(String key, String value);
+    CachedDBObject getCachedDBObject(String cachedDataKey, String key, String value);
 
     CachedDBObjectList getCachedDBObjectList(String key);
 

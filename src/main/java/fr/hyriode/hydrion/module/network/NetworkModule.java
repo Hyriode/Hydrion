@@ -3,9 +3,7 @@ package fr.hyriode.hydrion.module.network;
 import com.mongodb.BasicDBObject;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import fr.hyriode.hydrion.Hydrion;
 import fr.hyriode.hydrion.api.module.HydrionModule;
-import fr.hyriode.hydrion.network.http.HttpRouter;
 
 import java.util.List;
 
@@ -19,6 +17,10 @@ public class NetworkModule extends HydrionModule {
     private MongoCollection<BasicDBObject> networkCollection;
 
     private MongoDatabase database;
+
+    public NetworkModule() {
+        super("network");
+    }
 
     protected void init() {
         this.addHandler("/network", new NetworkHandler(this));

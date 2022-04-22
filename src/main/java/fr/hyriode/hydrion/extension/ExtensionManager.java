@@ -2,6 +2,7 @@ package fr.hyriode.hydrion.extension;
 
 import fr.hyriode.hydrion.Hydrion;
 import fr.hyriode.hydrion.api.extension.HydrionExtension;
+import fr.hyriode.hydrion.api.module.HydrionModule;
 import fr.hyriode.hydrion.util.IOUtil;
 
 import java.io.File;

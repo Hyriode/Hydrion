@@ -22,10 +22,10 @@ public class Test {
         final HydrionClient hydrionClient = new HydrionClient("http://localhost:8080/", UUID.fromString("92109827-fdcd-4b82-9d74-2d2050f13482"));
 
         testPlayer(hydrionClient);
-        testGames(hydrionClient);
+       /* testGames(hydrionClient);
         testFriends(hydrionClient);
         testNetwork(hydrionClient);
-        testBoosters(hydrionClient);
+        testBoosters(hydrionClient);*/
     }
 
     private static void testPlayer(HydrionClient client) {

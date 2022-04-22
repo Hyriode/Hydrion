@@ -26,6 +26,10 @@ public class ResourcesModule extends HydrionModule {
 
     private MongoDatabase database;
 
+    public ResourcesModule() {
+        super("resources");
+    }
+
     protected void init() {
         this.addHandler(PATH + "games", new GamesHandler(this));
         this.addHandler(PATH + "game", new GameHandler(this));

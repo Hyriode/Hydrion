@@ -3,7 +3,6 @@ package fr.hyriode.hydrion.module.boosters;
 import com.mongodb.BasicDBObject;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import fr.hyriode.hydrion.Hydrion;
 import fr.hyriode.hydrion.api.HydrionAPI;
 import fr.hyriode.hydrion.api.module.HydrionModule;
 
@@ -22,6 +21,10 @@ public class BoostersModule extends HydrionModule {
 
     private MongoDatabase database;
     private MongoCollection<BasicDBObject> actives;
+
+    public BoostersModule() {
+        super(KEY);
+    }
 
     protected void init() {
         this.addHandler("/boosters", new BoostersHandler(this));

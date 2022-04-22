@@ -17,6 +17,10 @@ public class UUIDFetcherModule extends HydrionModule {
 
     private MongoCollection<BasicDBObject> uuids;
 
+    public UUIDFetcherModule() {
+        super("uuid");
+    }
+
     protected void init() {
         this.addHandler("/uuid", new UUIDFetcherHandler(this));
 

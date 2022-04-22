@@ -2,10 +2,8 @@ package fr.hyriode.hydrion.module.friends;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.reactivestreams.client.MongoCollection;
-import fr.hyriode.hydrion.Hydrion;
 import fr.hyriode.hydrion.api.HydrionAPI;
 import fr.hyriode.hydrion.api.module.HydrionModule;
-import fr.hyriode.hydrion.api.module.IModuleManager;
 import fr.hyriode.hydrion.module.player.PlayerModule;
 
 import java.util.UUID;
@@ -20,6 +18,10 @@ public class FriendsModule extends HydrionModule {
     private static final String UUID_KEY = "uuid";
 
     private MongoCollection<BasicDBObject> friends;
+
+    public FriendsModule() {
+        super("friends");
+    }
 
     protected void init() {
         this.addHandler("/friends", new FriendsHandler(this));

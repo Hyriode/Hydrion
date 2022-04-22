@@ -68,16 +68,20 @@ public class CacheManager implements ICacheManager {
     }
 
     @Override
-    public CachedDBObject getCachedDBObject(String key, String value) {
-        for (CachedData<?> data : this.cachedData.values()) {
-            if (data instanceof final CachedDBObject cachedData) {
-                final BasicDBObject dbObject = cachedData.getValue();
+    public CachedDBObject getCachedDBObject(String cachedDataKey, String key, String value) {
+        for (Map.Entry<String, CachedData<?>> entry : this.cachedData.entrySet()) {
+            if (entry.getKey().startsWith(cachedDataKey)) {
+                final CachedData<?> data = entry.getValue();
 
-                if (dbObject != null) {
-                    final Object object = dbObject.get(key);
+                if (data instanceof final CachedDBObject cachedData) {
+                    final BasicDBObject dbObject = cachedData.getValue();
 
-                    if (object != null && object.toString().equals(value)) {
-                        return cachedData;
+                    if (dbObject != null) {
+                        final Object object = dbObject.get(key);
+
+                        if (object != null && object.toString().equals(value)) {
+                            return cachedData;
+                        }
                     }
                 }
             }

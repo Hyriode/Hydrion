@@ -21,22 +21,17 @@ public class UUIDFetcherHandler extends HydrionHandler {
     public UUIDFetcherHandler(UUIDFetcherModule module) {
         this.addParameterHandlers(new StringHandler(ParameterKeys.NAME));
         this.addMethodHandler(HttpMethod.GET, (request, ctx) -> {
-            final String name = request.getParameter(ParameterKeys.NAME, String.class);
+            final String name = request.getParameter(ParameterKeys.NAME, String.class).toLowerCase();
+            final BasicDBObject dbObject = module.getUUID(name);
 
-            return new HydrionResponse(true, new UUIDObject(module.getUUID(name)));
+            return new HydrionResponse(true, new UUIDObject(dbObject));
         });
         this.addMethodHandler(HttpMethod.POST, (request, ctx) -> this.handleJsonPost(request, ctx, json -> {
-            final JsonObject element = JsonParser.parseString(json).getAsJsonObject();
-
-            if (element.get(ParameterKeys.UUID) == null) {
-                return new BadJsonError(ParameterKeys.UUID);
-            }
-
             final BasicDBObject dbObject = BasicDBObject.parse(json);
-            final String name = request.getParameter(ParameterKeys.NAME, String.class);
+            final String name = request.getParameter(ParameterKeys.NAME, String.class).toLowerCase();
 
             if (module.getUUID(name) == null) {
-                module.addUUID(name, dbObject);
+                module.addUUID(dbObject.append(ParameterKeys.NAME, name));
             } else {
                 module.updateUUID(name, dbObject);
             }

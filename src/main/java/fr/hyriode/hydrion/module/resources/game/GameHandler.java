@@ -37,8 +37,12 @@ public class GameHandler extends HydrionHandler {
             final BasicDBObject dbObject = BasicDBObject.parse(json);
 
             if (this.resourcesModule.getGame(name) == null) {
+                System.out.println("Added '" + name + "' game");
+
                 this.resourcesModule.addGame(dbObject);
             } else {
+                System.out.println("Updated '" + name + "' game");
+
                 this.resourcesModule.updateGame(name, dbObject);
             }
             return new HydrionPostRequestResponse();

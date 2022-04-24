@@ -40,43 +40,14 @@ public class ResourcesModule extends HydrionModule {
 
     public void addGame(BasicDBObject dbObject) {
         this.addData(this.gamesCollection, dbObject);
-
-        HydrionAPI.POOL.execute(() -> {
-            final List<BasicDBObject> dbObjects = this.getGames();
-
-            dbObjects.add(dbObject);
-
-            this.updateAllCachedData(KEY, dbObjects);
-        });
     }
 
     public void removeGame(String name) {
         this.removeData(this.gamesCollection, NAME_KEY, name);
-
-        HydrionAPI.POOL.execute(() -> {
-            final List<BasicDBObject> dbObjects = this.getGames();
-
-            dbObjects.removeIf(object -> object.getString(NAME_KEY).equals(name));
-
-            this.updateAllCachedData(KEY, dbObjects);
-        });
     }
 
     public void updateGame(String name, BasicDBObject dbObject) {
         this.updateData(this.gamesCollection, NAME_KEY, name, dbObject);
-
-        HydrionAPI.POOL.execute(() -> {
-            final List<BasicDBObject> dbObjects = this.getGames();
-
-            for (BasicDBObject object : dbObjects) {
-                if (object.getObjectId(ID).toString().equals(dbObject.getObjectId(ID).toString())) {
-                    dbObjects.remove(object);
-                    dbObjects.add(dbObject);
-                }
-            }
-
-            this.updateAllCachedData(KEY, dbObjects);
-        });
     }
 
     public BasicDBObject getGame(String name) {

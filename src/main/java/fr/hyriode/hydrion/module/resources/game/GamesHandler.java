@@ -31,8 +31,6 @@ public class GamesHandler extends HydrionHandler {
             if (games != null) {
                 for (BasicDBObject game : games) {
                     gamesMap.put(game.getString(NAME), game);
-
-                    game.removeField(NAME);
                 }
             }
 

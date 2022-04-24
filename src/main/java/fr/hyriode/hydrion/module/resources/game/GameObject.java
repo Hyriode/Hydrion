@@ -13,18 +13,18 @@ import java.util.Map;
  */
 public class GameObject extends HydrionObject {
 
-    private static final String NAME = "name";
-
-    private Map<String, BasicDBObject> game;
+    private BasicDBObject game;
 
     public GameObject(BasicDBObject game) {
         if (game != null) {
-            this.game = new HashMap<>();
-            this.game.put(game.getString(NAME), game);
+            this.game = game;
 
             game.removeField(ID_KEY);
-            game.removeField(NAME);
         }
+    }
+
+    public BasicDBObject getGame() {
+        return this.game;
     }
 
 }

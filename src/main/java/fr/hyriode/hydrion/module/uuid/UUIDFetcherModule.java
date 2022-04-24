@@ -27,7 +27,7 @@ public class UUIDFetcherModule extends HydrionModule {
         this.uuids = HydrionAPI.get().getModuleManager().getModule(PlayerModule.class).getDatabase().getCollection("uuid", BasicDBObject.class);
     }
 
-    public void addUUID(String name, BasicDBObject dbObject) {
+    public void addUUID(BasicDBObject dbObject) {
         this.addData(this.uuids, dbObject);
     }
 

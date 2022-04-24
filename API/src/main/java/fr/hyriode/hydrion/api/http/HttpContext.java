@@ -30,7 +30,11 @@ public class HttpContext {
         final FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, byteBuf);
 
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, String.format("%s; charset=UTF-8", contentType))
-                .setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+                .setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes())
+                .set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:8080")
+                .set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true")
+                .set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, DELETE, PUT, OPTIONS")
+                .set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_HEADERS, "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization");
 
         this.ctx.writeAndFlush(response);
     }
@@ -63,7 +67,7 @@ public class HttpContext {
 
         final FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, byteBuf);
 
-        response.headers().add(HttpHeaderNames.CONTENT_TYPE, String.format("%s; charset=UTF-8", contentType));
+        response.headers().add(HttpHeaderNames.CONTENT_TYPE, String.format("%s; charset=UTF-8", contentType)).set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }

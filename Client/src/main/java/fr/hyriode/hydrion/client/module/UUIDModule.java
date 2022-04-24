@@ -27,7 +27,7 @@ public class UUIDModule extends ClientModule {
             final JsonElement content = response.getContent();
 
             if (!content.isJsonNull()) {
-                return UUID.fromString(content.getAsJsonObject().get("value").getAsString());
+                return UUID.fromString(content.getAsJsonObject().get("content").getAsString());
             }
             return null;
         });
@@ -36,7 +36,7 @@ public class UUIDModule extends ClientModule {
     public CompletableFuture<HydrionResponse> setUUID(String name, UUID uuid) {
         final JsonObject object = new JsonObject();
 
-        object.addProperty("value", uuid.toString());
+        object.addProperty("content", uuid.toString());
 
         return this.post(ENDPOINT, object.toString(), HttpParameters.create().add(NAME_KEY, name));
     }

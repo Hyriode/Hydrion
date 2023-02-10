@@ -1,8 +1,6 @@
 package fr.hyriode.hydrion.extension;
 
-import fr.hyriode.hydrion.Hydrion;
 import fr.hyriode.hydrion.api.extension.HydrionExtension;
-import fr.hyriode.hydrion.api.module.HydrionModule;
 import fr.hyriode.hydrion.util.IOUtil;
 
 import java.io.File;
@@ -24,7 +22,7 @@ import java.util.jar.JarFile;
 public class ExtensionManager {
 
     private static final String MAIN_CLASS = "Extension-Main-Class";
-    private static final Path FOLDER = Paths.get(Hydrion.DATA_FOLDER.toString(), "extensions");
+    private static final Path FOLDER = Paths.get("extensions");
 
     private final List<ExtensionMeta> extensionMetas;
     private final List<HydrionExtension> extensions;

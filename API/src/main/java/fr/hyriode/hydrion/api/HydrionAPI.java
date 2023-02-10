@@ -2,14 +2,9 @@ package fr.hyriode.hydrion.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import fr.hyriode.hydrion.api.cache.ICacheManager;
-import fr.hyriode.hydrion.api.database.mongodb.MongoDB;
-import fr.hyriode.hydrion.api.module.IModuleManager;
-import fr.hyriode.hydrion.api.object.network.INetworkManager;
+import fr.hyriode.hydrion.api.network.INetworkManager;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Project: Hydrion
@@ -21,7 +16,6 @@ public abstract class HydrionAPI {
     public static final Gson GSON = new GsonBuilder()
             .serializeNulls()
             .create();
-    public static final ExecutorService POOL = Executors.newCachedThreadPool();
 
     private static HydrionAPI instance;
 
@@ -34,12 +28,6 @@ public abstract class HydrionAPI {
     public abstract UUID getAPIKey();
 
     public abstract INetworkManager getNetworkManager();
-
-    public abstract ICacheManager getCacheManager();
-
-    public abstract IModuleManager getModuleManager();
-
-    public abstract MongoDB getMongoDB();
 
     public static HydrionAPI get() {
         return instance;

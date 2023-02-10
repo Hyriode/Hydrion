@@ -1,7 +1,3 @@
-plugins {
-    id "com.github.johnrengelman.shadow"
-}
-
 apply plugin: 'maven-publish'
 
 version = '1.0.7'
@@ -25,11 +21,6 @@ tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
 }
 
-shadowJar {
-    configurations = [project.configurations.runtimeClasspath]
-    classifier ''
-}
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -40,7 +31,7 @@ publishing {
                 artifactId = 'hydrion-api'
                 version = project.version
                 name = 'HydrionAPI'
-                description = 'The API used to create extension and modules for Hydrion'
+                description = 'The API used to create extensions for Hydrion'
                 url = 'https://github.com/Hyriode/Hydrion'
             }
         }
@@ -59,7 +50,6 @@ publishing {
 }
 
 dependencies {
-    api 'io.netty:netty-all:4.1.75.Final'
-    api 'com.google.guava:guava:31.1-jre'
-    api 'org.mongodb:mongodb-driver-reactivestreams:4.5.1'
+    api 'fr.hyriode:hyriapi:1.4.3'
+    api 'io.netty:netty-all:4.1.87.Final'
 }

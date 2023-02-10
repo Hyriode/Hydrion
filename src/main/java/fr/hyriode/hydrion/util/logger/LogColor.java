@@ -1,10 +1,5 @@
 package fr.hyriode.hydrion.util.logger;
 
-/**
- * Project: Hydrion
- * Created by AstFaster
- * on 03/09/2021 at 10:05
- */
 public enum LogColor {
 
     BLACK('0', 0x00),
@@ -31,39 +26,18 @@ public enum LogColor {
     RESET('r', 0x15);
 
     public static final char COLOR_CHAR = '\u00A7';
-
     private final String toString;
-
-    private final char code;
-    private final int intCode;
-    private final boolean format;
 
     LogColor(char code, int intCode) {
         this(code, intCode, false);
     }
 
-    LogColor(char code, int intCode, boolean format) {
+    LogColor(char code, int intCode, boolean isFormat) {
         this.toString = new String(new char[]{COLOR_CHAR, code});
-        this.code = code;
-        this.intCode = intCode;
-        this.format = format;
-    }
-
-    public char getCode() {
-        return this.code;
-    }
-
-    public int getIntCode() {
-        return this.intCode;
-    }
-
-    public boolean isFormat() {
-        return this.format;
     }
 
     @Override
     public String toString() {
-        return this.toString;
+        return toString;
     }
-
 }

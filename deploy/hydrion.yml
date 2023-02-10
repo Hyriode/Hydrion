@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hydrion-pvc
+spec:
+  storageClassName: ""
+  volumeName: hydrion-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hydrion-pv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  hostPath:
+    path: /run/desktop/mnt/host/c/Users/Corentin/Documents/Hyriode/Hydrion/deploy/data/hydrion
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hydrion
+  labels:
+    app: hydrion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hydrion
+  template:
+    metadata:
+      labels:
+        app: hydrion
+    spec:
+      containers:
+        - name: hydrion
+          args: ["--dbpath","/data/db"]
+          image: 127.0.0.1:5000/hydrion
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MEMORY
+              value: 2G
+          volumeMounts:
+            - name: hydrion-data-dir
+              mountPath: /usr/app/data
+      volumes:
+        - name: hydrion-data-dir
+          persistentVolumeClaim:
+            claimName: hydrion-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hydrion-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: hydrion
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30100

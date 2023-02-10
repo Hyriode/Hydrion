@@ -13,22 +13,9 @@ import java.nio.file.Path;
  */
 public class IOUtil {
 
-    public static boolean exist(File folder, String name) {
-        boolean exist = false;
-        final File[] list = folder.listFiles();
-        if (list != null) {
-            for (File file : list) {
-                if (file.getName().equals(name)) {
-                    exist = true;
-                    break;
-                }
-            }
-        }
-        return exist;
-    }
-
     public static String loadFile(Path path) {
         final StringBuilder sb = new StringBuilder();
+
         if (Files.exists(path)) {
             try (final BufferedReader reader = Files.newBufferedReader(path)) {
                 String line;

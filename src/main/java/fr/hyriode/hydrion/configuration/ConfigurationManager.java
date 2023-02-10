@@ -2,7 +2,8 @@ package fr.hyriode.hydrion.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import fr.hyriode.hydrion.Hydrion;
+import fr.hyriode.api.config.MongoDBConfig;
+import fr.hyriode.api.config.RedisConfig;
 import fr.hyriode.hydrion.util.IOUtil;
 
 import java.nio.file.Path;
@@ -16,7 +17,7 @@ import java.util.UUID;
  */
 public class ConfigurationManager {
 
-    public static final Path CONFIG_FILE = Paths.get(Hydrion.DATA_FOLDER.toString(), "config.json");
+    public static final Path CONFIG_FILE = Paths.get("config.json");
 
     private Configuration configuration;
 
@@ -33,7 +34,8 @@ public class ConfigurationManager {
         if (!json.equals("")) {
             return this.configuration = gson.fromJson(json, Configuration.class);
         } else {
-            this.configuration = new Configuration(8080, "mongodb://localhost", UUID.randomUUID());
+            this.configuration = new Configuration(8080, new RedisConfig("localhost", 6378, "p@ssw0rd"), new MongoDBConfig("user", "p@ssw0rd", "localhost", 27017), UUID.randomUUID());
+
             IOUtil.save(CONFIG_FILE, gson.toJson(configuration));
 
             System.err.println("Please fill configuration file before continue!");

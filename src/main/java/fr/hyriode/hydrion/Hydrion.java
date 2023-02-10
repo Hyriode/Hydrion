@@ -1,30 +1,18 @@
 package fr.hyriode.hydrion;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import fr.hyriode.hydrion.api.database.mongodb.MongoDB;
-import fr.hyriode.hydrion.cache.CacheManager;
+import fr.hyriode.api.HyriAPI;
+import fr.hyriode.api.impl.application.HyriAPIImpl;
+import fr.hyriode.api.impl.application.config.HyriAPIConfig;
 import fr.hyriode.hydrion.configuration.Configuration;
 import fr.hyriode.hydrion.configuration.ConfigurationManager;
 import fr.hyriode.hydrion.extension.ExtensionManager;
-import fr.hyriode.hydrion.module.ModuleManager;
-import fr.hyriode.hydrion.module.friends.FriendsModule;
-import fr.hyriode.hydrion.module.network.NetworkModule;
-import fr.hyriode.hydrion.module.player.PlayerModule;
-import fr.hyriode.hydrion.module.resources.ResourcesModule;
 import fr.hyriode.hydrion.network.NetworkManager;
 import fr.hyriode.hydrion.util.IOUtil;
-import fr.hyriode.hydrion.util.logger.HydrionLogger;
-import fr.hyriode.hydrion.util.logger.LoggingOutputStream;
+import fr.hyriode.hydrion.util.logger.ColoredLogger;
 import jline.console.ConsoleReader;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -35,30 +23,21 @@ import java.util.logging.Logger;
 public class Hydrion {
 
     public static final String NAME = "Hydrion";
-    public static final Path DATA_FOLDER = Paths.get("data");
 
     /** Logger */
     private ConsoleReader consoleReader;
-    private static HydrionLogger logger;
+    private static ColoredLogger logger;
 
     /** Configuration */
     private ConfigurationManager configurationManager;
     private Configuration configuration;
 
-    /** Databases */
-    private MongoDB mongoDB;
-
-    /** Cache */
-    private CacheManager cacheManager;
-
     /** Network */
     private NetworkManager networkManager;
 
-    /** Module */
-    private ModuleManager moduleManager;
-
     /** API */
     private HydrionImpl api;
+    private HyriAPI hyriAPI;
 
     /** Extension */
     private ExtensionManager extensionManager;
@@ -67,9 +46,7 @@ public class Hydrion {
     private boolean running;
 
     public void start() {
-        HydrionLogger.printHeaderMessage();
-
-        IOUtil.createDirectory(DATA_FOLDER);
+        ColoredLogger.printHeaderMessage();
 
         this.setupLogger();
 
@@ -77,13 +54,14 @@ public class Hydrion {
 
         this.configurationManager = new ConfigurationManager();
         this.configuration = this.configurationManager.loadConfiguration();
-        this.mongoDB = new MongoDB(this.configuration.getMongoDBUrl());
-        this.mongoDB.start();
-        this.cacheManager = new CacheManager();
-        this.networkManager = new NetworkManager(this);
-        this.moduleManager = new ModuleManager();
         this.api = new HydrionImpl(this);
-        this.moduleManager.registerDefaults();
+        this.hyriAPI = new HyriAPIImpl(new HyriAPIConfig.Builder()
+                .withDevEnvironment(false)
+                .withHyggdrasil(false)
+                .withRedisConfig(this.configuration.getRedisConfig())
+                .withMongoDBConfig(this.configuration.getMongoDBConfig())
+                .build(), NAME);
+        this.networkManager = new NetworkManager(this);
         this.extensionManager = new ExtensionManager();
         this.extensionManager.start();
 
@@ -102,12 +80,9 @@ public class Hydrion {
             e.printStackTrace();
         }
 
-        IOUtil.createDirectory(Paths.get(DATA_FOLDER.toString(), "logs"));
+        IOUtil.createDirectory(Paths.get("logs"));
 
-        logger = new HydrionLogger(this, NAME, "data/logs/hydrion.log");
-
-        System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));
-        System.setOut(new PrintStream(new LoggingOutputStream(logger, Level.INFO), true));
+        logger = new ColoredLogger(NAME, Paths.get("logs/hydrion.log"));
     }
 
     public void stop() {
@@ -119,7 +94,6 @@ public class Hydrion {
 
         this.extensionManager.disableExtensions();
         this.networkManager.shutdown();
-        this.mongoDB.stop();
 
         System.out.println(NAME + " is now down. See you soon!");
     }
@@ -140,24 +114,16 @@ public class Hydrion {
         return this.configuration;
     }
 
-    public MongoDB getMongoDB() {
-        return this.mongoDB;
-    }
-
-    public CacheManager getCacheManager() {
-        return this.cacheManager;
-    }
-
     public NetworkManager getNetworkManager() {
         return this.networkManager;
     }
 
-    public ModuleManager getModuleManager() {
-        return this.moduleManager;
-    }
-
     public HydrionImpl getAPI() {
         return this.api;
+    }
+
+    public HyriAPI getHyriAPI() {
+        return this.hyriAPI;
     }
 
     public static Logger getLogger() {

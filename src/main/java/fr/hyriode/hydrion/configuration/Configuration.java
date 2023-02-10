@@ -1,5 +1,8 @@
 package fr.hyriode.hydrion.configuration;
 
+import fr.hyriode.api.config.MongoDBConfig;
+import fr.hyriode.api.config.RedisConfig;
+
 import java.util.UUID;
 
 /**
@@ -10,12 +13,14 @@ import java.util.UUID;
 public class Configuration {
 
     private final int port;
-    private final String mongoDBUrl;
+    private final RedisConfig redisConfig;
+    private final MongoDBConfig mongoDBConfig;
     private final UUID apiKey;
 
-    public Configuration(int port, String mongoDBUrl, UUID apiKey) {
+    public Configuration(int port, RedisConfig redisConfig, MongoDBConfig mongoDBConfig, UUID apiKey) {
         this.port = port;
-        this.mongoDBUrl = mongoDBUrl;
+        this.redisConfig = redisConfig;
+        this.mongoDBConfig = mongoDBConfig;
         this.apiKey = apiKey;
     }
 
@@ -23,8 +28,12 @@ public class Configuration {
         return this.port;
     }
 
-    public String getMongoDBUrl() {
-        return this.mongoDBUrl;
+    public RedisConfig getRedisConfig() {
+        return this.redisConfig;
+    }
+
+    public MongoDBConfig getMongoDBConfig() {
+        return this.mongoDBConfig;
     }
 
     public UUID getAPIKey() {

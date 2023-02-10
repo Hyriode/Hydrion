@@ -1,13 +1,17 @@
 package fr.hyriode.hydrion.api.http.request;
 
+import com.google.gson.JsonObject;
+import fr.hyriode.api.HyriAPI;
+import fr.hyriode.hydrion.api.http.HttpContext;
+import fr.hyriode.hydrion.api.util.URIUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponseStatus;
 
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Project: Hydrion
@@ -16,7 +20,9 @@ import java.util.Map;
  */
 public class HttpRequest {
 
-    private final Map<Class<?>, Map<String, Object>> parameterObjects;
+    private static final String CONTENT_TYPE_HEADER_KEY = "Content-Type";
+
+    private final HttpContext ctx;
 
     private final String uri;
     private final HttpMethod method;
@@ -25,28 +31,28 @@ public class HttpRequest {
 
     private final List<HttpRequestParameter> parameters;
 
-    public HttpRequest(FullHttpRequest request, List<HttpRequestParameter> parameters) {
+    public HttpRequest(FullHttpRequest request, HttpContext ctx, List<HttpRequestParameter> parameters) {
+        this.ctx = ctx;
         this.parameters = parameters;
-        this.uri = request.uri();
+        this.uri = URIUtil.normalize(request.uri());
         this.method = request.method();
         this.headers = request.headers();
         this.content = request.content();
-        this.parameterObjects = new HashMap<>();
     }
 
-    public String getUri() {
+    public String uri() {
         return this.uri;
     }
 
-    public HttpMethod getMethod() {
+    public HttpMethod method() {
         return this.method;
     }
 
     public boolean hasParameter(String key) {
-        return this.getParameter(key) != null;
+        return this.parameter(key) != null;
     }
 
-    public HttpRequestParameter getParameter(String key) {
+    public HttpRequestParameter parameter(String key) {
         for (HttpRequestParameter parameter : this.parameters) {
             if (parameter.getKey().equalsIgnoreCase(key)) {
                 return parameter;
@@ -55,27 +61,34 @@ public class HttpRequest {
         return null;
     }
 
-
-    public <T> T getParameter(String key, Class<T> clazz) {
-        final Map<String, Object> objects = this.parameterObjects.get(clazz);
-
-        return objects == null ? null : clazz.cast(objects.get(key));
-    }
-
-    public List<HttpRequestParameter> getParameters() {
+    public List<HttpRequestParameter> parameters() {
         return this.parameters;
     }
 
-    public HttpHeaders getHeaders() {
+    public HttpHeaders headers() {
         return this.headers;
     }
 
-    public ByteBuf getContent() {
+    public ByteBuf content() {
         return this.content;
     }
 
-    public Map<Class<?>, Map<String, Object>> getParameterObjects() {
-        return this.parameterObjects;
+    public JsonObject jsonBody() {
+        final String contentType = this.headers.get(CONTENT_TYPE_HEADER_KEY);
+
+        if (contentType == null || !contentType.contains("application/json")) {
+            this.ctx.error("Bad Content-Type", HttpResponseStatus.BAD_REQUEST);
+            return null;
+        }
+
+        final String json = this.content.toString(StandardCharsets.UTF_8);
+
+        try {
+            return HyriAPI.GSON.fromJson(json, JsonObject.class);
+        } catch (Exception e) {
+            this.ctx.error("Bad Json", HttpResponseStatus.BAD_REQUEST);
+            return null;
+        }
     }
 
 }

@@ -1,18 +1,27 @@
 package fr.hyriode.hydrion.api.util;
 
-import java.util.regex.Pattern;
+import java.util.UUID;
 
 /**
- * Project: Hydrion
  * Created by AstFaster
- * on 29/03/2022 at 20:59
+ * on 21/09/2022 at 07:23
  */
 public class UUIDUtil {
 
-    private static final Pattern PATTERN = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+    public static UUID parseString(String input) {
+        try {
+            if (!input.contains("-")) {
+                input = input.substring(0, 8) + "-" +
+                        input.substring(8, 12) + "-" +
+                        input.substring(12, 16) + "-" +
+                        input.substring(16, 20) + "-" +
+                        input.substring(20, 32);
+            }
 
-    public static boolean isUUID(String input) {
-        return PATTERN.matcher(input).matches();
+            return UUID.fromString(input);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }

@@ -1,7 +1,5 @@
 package fr.hyriode.hydrion.api.http;
 
-import fr.hyriode.api.HyriAPI;
-import fr.hyriode.hydrion.api.HydrionAPI;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -10,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
 /**
  * Project: Hydrion
@@ -57,19 +56,32 @@ public class HttpContext {
     }
 
     private void error(String msg, String contentType, HttpResponseStatus status) {
-        this.sendResponse(HydrionAPI.GSON.toJson(new HydrionResponse(false, msg)).getBytes(StandardCharsets.UTF_8), contentType, status);
+        final HttpResponse response = new HttpResponse()
+                .add("success", false)
+                .add("code", status.code())
+                .add("message", msg);
+
+        this.sendResponse(response.toString().getBytes(StandardCharsets.UTF_8), contentType, status);
     }
 
     public void error(String msg, HttpResponseStatus status) {
         this.error(msg, HttpHeaderValues.APPLICATION_JSON.toString(), status);
     }
 
-    public void json(Object object, HttpResponseStatus status) {
-        this.text(HydrionAPI.GSON.toJson(new HydrionResponse(true, object)), "application/json", status);
+    public void json(Consumer<HttpResponse> responseConsumer, HttpResponseStatus status) {
+        final HttpResponse response = new HttpResponse().add("success", true);
+
+        responseConsumer.accept(response);
+
+        this.text(response.toString(), "application/json", status);
     }
 
-    public void json(Object object) {
-        this.json(object, HttpResponseStatus.OK);
+    public void json(Consumer<HttpResponse> responseConsumer) {
+        this.json(responseConsumer, HttpResponseStatus.OK);
+    }
+
+    public void json(Object obj) {
+        this.json(response -> response.add("response", obj), HttpResponseStatus.OK);
     }
 
 }

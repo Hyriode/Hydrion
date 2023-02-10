@@ -2,6 +2,7 @@ package fr.hyriode.hydrion.routes;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.game.IHyriGameInfo;
+import fr.hyriode.hydrion.api.HydrionAPI;
 import fr.hyriode.hydrion.api.http.IHttpRouter;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
@@ -26,7 +27,7 @@ public class ResourcesRoutes extends Routes {
                 result.put(game.getName(), game);
             }
 
-            ctx.json(result);
+            ctx.json(response -> response.add("games", result));
         });
 
         router.get("/game", (request, ctx) -> {
@@ -34,14 +35,14 @@ public class ResourcesRoutes extends Routes {
                 final String gameName = request.parameter("name").getValue();
                 final IHyriGameInfo gameInfo = HyriAPI.get().getGameManager().getGameInfo(gameName);
 
-                ctx.json(gameInfo);
+                ctx.json(response -> response.add("game", gameInfo));
             } catch (Exception e) {
-                ctx.error("Bad request!", HttpResponseStatus.BAD_REQUEST);
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }
         });
 
-        router.get("/rotating-game", (request, ctx) -> ctx.json(HyriAPI.get().getGameManager().getRotatingGameManager().getRotatingGame()));
-        router.get("/rotating-games", (request, ctx) -> ctx.json(HyriAPI.get().getGameManager().getRotatingGameManager().getRotatingGames()));
+        router.get("/rotating-game", (request, ctx) -> ctx.json(response -> response.add("rotating_game", HyriAPI.get().getGameManager().getRotatingGameManager().getRotatingGame())));
+        router.get("/rotating-games", (request, ctx) -> ctx.json(response -> response.add("rotating_games", HyriAPI.get().getGameManager().getRotatingGameManager().getRotatingGames())));
     }
 
 }

@@ -8,9 +8,7 @@ import fr.hyriode.hydrion.api.http.IHttpRouter;
 import fr.hyriode.hydrion.api.http.request.HttpRequestParameter;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by AstFaster
@@ -26,47 +24,73 @@ public class LeaderboardRoutes extends Routes {
                 final String type = request.parameter("type").getValue();
                 final String name = request.parameter("name").getValue();
                 final IHyriLeaderboard leaderboard = HyriAPI.get().getLeaderboardProvider().getLeaderboard(type, name);
-                final HttpRequestParameter fromParameter = request.parameter("from");
-                final HttpRequestParameter toParameter = request.parameter("to");
+                final long from = Long.parseLong(request.parameter("from").getValue());
+                final long to = Long.parseLong(request.parameter("to").getValue());
                 final HttpRequestParameter scopeParameter = request.parameter("scope");
 
                 if (scopeParameter == null) {
-                    final Map<HyriLeaderboardScope, List<HyriLeaderboardScore>> scores = new HashMap<>();
-
-                    if (fromParameter != null && toParameter != null) {
-                        final long from = Long.parseLong(fromParameter.getValue());
-                        final long to = Long.parseLong(toParameter.getValue());
-
-                        for (HyriLeaderboardScope scope : HyriLeaderboardScope.values()) {
-                            scores.put(scope, leaderboard.getScores(scope, from, to));
-                        }
-
-                        ctx.json(scores);
-                        return;
-                    }
+                    final Map<HyriLeaderboardScope, Leaderboard> result = new HashMap<>();
 
                     for (HyriLeaderboardScope scope : HyriLeaderboardScope.values()) {
-                        scores.put(scope, leaderboard.getScores(scope));
+                        final List<HyriLeaderboardScore> scores = leaderboard.getScores(scope);
+                        final Leaderboard resultLeaderboard = new Leaderboard(type, name, scope, leaderboard.getSize(scope), scores.size(), from, to);
+
+                        for (HyriLeaderboardScore score : scores) {
+                            resultLeaderboard.addScore(new Leaderboard.Score(score.getId(), score.getValue()));
+                        }
+
+                        result.put(scope, resultLeaderboard);
                     }
 
-                    ctx.json(scores);
+                    ctx.json(response -> response.add("leaderboards", result));
                     return;
                 }
 
                 final HyriLeaderboardScope scope = HyriLeaderboardScope.valueOf(scopeParameter.getValue());
+                final List<HyriLeaderboardScore> scores = leaderboard.getScores(scope);
+                final Leaderboard result = new Leaderboard(type, name, scope, leaderboard.getSize(scope), scores.size(), from, to);
 
-                if (fromParameter != null && toParameter != null) {
-                    final long from = Long.parseLong(fromParameter.getValue());
-                    final long to = Long.parseLong(toParameter.getValue());
-
-                    ctx.json(leaderboard.getScores(scope, from, to));
-                } else {
-                    ctx.json(leaderboard.getScores(scope));
+                for (HyriLeaderboardScore score : scores) {
+                    result.addScore(new Leaderboard.Score(score.getId(), score.getValue()));
                 }
+
+                ctx.json(response -> response.add("leaderboard", result));
             } catch (Exception e) {
-                ctx.error("Bad request!", HttpResponseStatus.BAD_REQUEST);
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }
         });
+    }
+
+    private static class Leaderboard {
+
+        private final String type;
+        private final String name;
+        private final HyriLeaderboardScope scope;
+
+        private final long totalSize;
+        private final long currentSize;
+
+        private final long from;
+        private final long to;
+
+        private final List<Score> scores = new ArrayList<>();
+
+        public Leaderboard(String type, String name, HyriLeaderboardScope scope, long totalSize, long currentSize, long from, long to) {
+            this.type = type;
+            this.name = name;
+            this.scope = scope;
+            this.totalSize = totalSize;
+            this.currentSize = currentSize;
+            this.from = from;
+            this.to = to;
+        }
+
+        public void addScore(Score score) {
+            this.scores.add(score);
+        }
+
+        private record Score(UUID playerId, Number score) {}
+
     }
 
 }

@@ -4,11 +4,12 @@ import com.google.gson.JsonObject;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.friend.IHyriFriend;
 import fr.hyriode.api.player.IHyriPlayer;
+import fr.hyriode.api.player.IHyriPlayerSession;
 import fr.hyriode.api.rank.hyriplus.HyriPlus;
 import fr.hyriode.api.rank.hyriplus.HyriPlusTransaction;
 import fr.hyriode.api.rank.type.HyriPlayerRankType;
 import fr.hyriode.hydrion.api.http.IHttpRouter;
-import fr.hyriode.hydrion.api.util.UUIDUtil;
+import fr.hyriode.hydrion.api.util.NotchianUtil;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
 import java.util.ArrayList;
@@ -26,32 +27,53 @@ public class PlayerRoutes extends Routes {
 
         router.get("/", (request, ctx) -> {
             try {
-                final UUID playerId = UUIDUtil.parseString(request.parameter("uuid").getValue());
+                final UUID playerId = NotchianUtil.parseUUID(request.parameter("uuid").getValue());
 
-                ctx.json(IHyriPlayer.get(playerId));
+                ctx.json(response -> response.add("uuid", playerId).add("player", IHyriPlayer.get(playerId)));
             } catch (Exception e) {
-                ctx.error("Invalid uuid!", HttpResponseStatus.BAD_REQUEST);
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
+            }
+        });
+
+        router.get("/session", (request, ctx) -> {
+            try {
+                final UUID playerId = NotchianUtil.parseUUID(request.parameter("uuid").getValue());
+                final IHyriPlayerSession session = IHyriPlayerSession.get(playerId);
+
+                ctx.json(response -> response.add("uuid", playerId).add("online", session != null).add("session", session));
+            } catch (Exception e) {
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }
         });
 
         router.get("/uuid", (request, ctx) -> {
             final String name = request.parameter("name").getValue();
+
+            if (!NotchianUtil.isNameValid(name)) {
+                ctx.error("Invalid name!", HttpResponseStatus.BAD_REQUEST);
+                return;
+            }
+
             final UUID playerId = HyriAPI.get().getPlayerManager().getPlayerId(name);
 
-            ctx.json(playerId);
+            ctx.json(response -> response.add("name", name).add("uuid", playerId));
         });
 
         router.get("/rank", (request, ctx) -> {
-            final UUID playerId = UUIDUtil.parseString(request.parameter("uuid").getValue());
-            final IHyriPlayer account = IHyriPlayer.get(playerId);
+            try {
+                final UUID playerId = NotchianUtil.parseUUID(request.parameter("uuid").getValue());
+                final IHyriPlayer account = IHyriPlayer.get(playerId);
 
-            ctx.json(account.getRank());
+                ctx.json(response -> response.add("uuid", playerId).add("rank", account == null ? null : account.getRank()));
+            } catch (Exception e) {
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
+            }
         });
 
         router.post("/rank", (request, ctx) -> {
             try {
                 final JsonObject body = request.jsonBody();
-                final UUID playerId = UUIDUtil.parseString(body.get("uuid").getAsString());
+                final UUID playerId = NotchianUtil.parseUUID(body.get("uuid").getAsString());
                 final HyriPlayerRankType rank = HyriPlayerRankType.valueOf(body.get("rank").getAsString());
                 final IHyriPlayer account = IHyriPlayer.get(playerId);
 
@@ -60,36 +82,26 @@ public class PlayerRoutes extends Routes {
                     return;
                 }
 
+
                 if (account.getRank().isSuperior(rank)) {
                     ctx.error("Invalid rank!", HttpResponseStatus.BAD_REQUEST);
                     return;
                 }
 
+                final HyriPlayerRankType oldRank = account.getRank().getPlayerType();
+
                 account.setPlayerRank(rank);
                 account.update();
 
-                ctx.json(account.getRank());
+                ctx.json(response -> response.add("uuid", playerId).add("rank", rank).add("old_rank", oldRank));
             } catch (Exception e) {
-                ctx.error("Invalid body!", HttpResponseStatus.BAD_REQUEST);
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }
         });
 
         router.get("/hyriplus", (request, ctx) -> {
-            final UUID playerId = UUIDUtil.parseString(request.parameter("uuid").getValue());
-            final IHyriPlayer account = IHyriPlayer.get(playerId);
-
-            if (account == null) {
-                ctx.error("Invalid player!", HttpResponseStatus.UNPROCESSABLE_ENTITY);
-                return;
-            }
-
-            ctx.json(account.getHyriPlus());
-        });
-
-        router.post("/hyriplus", (request, ctx) -> {
             try {
-                final JsonObject body = request.jsonBody();
-                final UUID playerId = UUIDUtil.parseString(body.get("uuid").getAsString());
+                final UUID playerId = NotchianUtil.parseUUID(request.parameter("uuid").getValue());
                 final IHyriPlayer account = IHyriPlayer.get(playerId);
 
                 if (account == null) {
@@ -97,7 +109,28 @@ public class PlayerRoutes extends Routes {
                     return;
                 }
 
-                final long currentTime = System.currentTimeMillis();
+                ctx.json(response -> response.add("uuid", playerId).add("rank", account.getRank()).add("hyriplus", account.getHyriPlus()));
+            } catch (Exception e) {
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
+            }
+        });
+
+        router.post("/hyriplus", (request, ctx) -> {
+            try {
+                final JsonObject body = request.jsonBody();
+                final UUID playerId = NotchianUtil.parseUUID(body.get("uuid").getAsString());
+                final IHyriPlayer account = IHyriPlayer.get(playerId);
+
+                if (account == null) {
+                    ctx.error("Invalid player!", HttpResponseStatus.UNPROCESSABLE_ENTITY);
+                    return;
+                }
+
+                if (account.getRank().getRealPlayerType().getId() != HyriPlayerRankType.EPIC.getId()) {
+                    ctx.error("Player doesn't have the required rank (" + account.getRank().getRealPlayerType() + " < " + HyriPlayerRankType.EPIC + ")!", HttpResponseStatus.UNPROCESSABLE_ENTITY);
+                    return;
+                }
+
                 final long duration = body.get("duration").getAsLong();
                 final HyriPlus hyriPlus = account.getHyriPlus();
                 final boolean expired = hyriPlus.hasExpire();
@@ -108,27 +141,22 @@ public class PlayerRoutes extends Routes {
                     hyriPlus.enable();
                 }
 
-                account.addTransaction(HyriPlusTransaction.TRANSACTION_TYPE, String.valueOf(currentTime), new HyriPlusTransaction(duration));
+                account.addTransaction(HyriPlusTransaction.TRANSACTION_TYPE, new HyriPlusTransaction(duration));
 
-                ctx.json(body);
+                ctx.json(response -> response.add("uuid", playerId).add("rank", account.getRank()).add("hyriplus", hyriPlus));
             } catch (Exception e) {
-                ctx.error("Invalid body!", HttpResponseStatus.BAD_REQUEST);
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }
         });
 
         router.get("/friends", (request, ctx) -> {
             try {
-                final UUID playerId = UUIDUtil.parseString(request.parameter("uuid").getValue());
+                final UUID playerId = NotchianUtil.parseUUID(request.parameter("uuid").getValue());
+                final List<IHyriFriend> friends = HyriAPI.get().getFriendManager().getFriends(playerId);
 
-                List<IHyriFriend> friends = HyriAPI.get().getFriendManager().getFriends(playerId);
-
-                if (friends == null) {
-                    friends = new ArrayList<>();
-                }
-
-                ctx.json(friends);
+                ctx.json(response -> response.add("uuid", playerId).add("friends", friends == null ? new ArrayList<>() : friends));
             } catch (Exception e) {
-                ctx.error("Bad request!", HttpResponseStatus.BAD_REQUEST);
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }
         });
     }

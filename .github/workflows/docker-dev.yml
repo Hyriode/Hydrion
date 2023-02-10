@@ -1,4 +1,4 @@
-name: Docker Dev Workflow
+name: (Dev) Docker Workflow
 
 on:
   push:

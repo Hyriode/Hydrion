@@ -1,4 +1,4 @@
-name: Docker Production Workflow
+name: (Prod) Docker Workflow
 
 on:
   push:

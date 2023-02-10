@@ -32,7 +32,7 @@ public class LeaderboardRoutes extends Routes {
                     final Map<HyriLeaderboardScope, Leaderboard> result = new HashMap<>();
 
                     for (HyriLeaderboardScope scope : HyriLeaderboardScope.values()) {
-                        final List<HyriLeaderboardScore> scores = leaderboard.getScores(scope);
+                        final List<HyriLeaderboardScore> scores = leaderboard.getScores(scope, from, to);
                         final Leaderboard resultLeaderboard = new Leaderboard(type, name, scope, leaderboard.getSize(scope), scores.size(), from, to);
 
                         for (HyriLeaderboardScore score : scores) {
@@ -47,7 +47,7 @@ public class LeaderboardRoutes extends Routes {
                 }
 
                 final HyriLeaderboardScope scope = HyriLeaderboardScope.valueOf(scopeParameter.getValue());
-                final List<HyriLeaderboardScore> scores = leaderboard.getScores(scope);
+                final List<HyriLeaderboardScore> scores = leaderboard.getScores(scope, from, to);
                 final Leaderboard result = new Leaderboard(type, name, scope, leaderboard.getSize(scope), scores.size(), from, to);
 
                 for (HyriLeaderboardScore score : scores) {

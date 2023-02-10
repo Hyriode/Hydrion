@@ -57,7 +57,7 @@ public class Hydrion {
         this.api = new HydrionImpl(this);
         this.hyriAPI = new HyriAPIImpl(new HyriAPIConfig.Builder()
                 .withDevEnvironment(false)
-                .withHyggdrasil(false)
+                .withHyggdrasil(true)
                 .withRedisConfig(this.config.getRedisConfig())
                 .withMongoDBConfig(this.config.getMongoDBConfig())
                 .build(), NAME);

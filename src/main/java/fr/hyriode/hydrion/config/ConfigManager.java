@@ -1,4 +1,4 @@
-package fr.hyriode.hydrion.configuration;
+package fr.hyriode.hydrion.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,13 +15,13 @@ import java.util.UUID;
  * Created by AstFaster
  * on 04/09/2021 at 11:52
  */
-public class ConfigurationManager {
+public class ConfigManager {
 
     public static final Path CONFIG_FILE = Paths.get("config.json");
 
-    private Configuration configuration;
+    private Config config;
 
-    public Configuration loadConfiguration() {
+    public Config loadConfiguration() {
         System.out.println("Loading configuration...");
 
         final Gson gson = new GsonBuilder()
@@ -32,21 +32,21 @@ public class ConfigurationManager {
         final String json = IOUtil.loadFile(CONFIG_FILE);
 
         if (!json.equals("")) {
-            return this.configuration = gson.fromJson(json, Configuration.class);
+            return this.config = gson.fromJson(json, Config.class);
         } else {
-            this.configuration = new Configuration(8080, new RedisConfig("localhost", 6378, "p@ssw0rd"), new MongoDBConfig("user", "p@ssw0rd", "localhost", 27017), UUID.randomUUID());
+            this.config = new Config(8080, new RedisConfig("localhost", 6378, "p@ssw0rd"), new MongoDBConfig("user", "p@ssw0rd", "localhost", 27017), UUID.randomUUID());
 
-            IOUtil.save(CONFIG_FILE, gson.toJson(configuration));
+            IOUtil.save(CONFIG_FILE, gson.toJson(config));
 
             System.err.println("Please fill configuration file before continue!");
             System.exit(0);
 
-            return this.configuration;
+            return this.config;
         }
     }
 
-    public Configuration getConfiguration() {
-        return this.configuration;
+    public Config getConfiguration() {
+        return this.config;
     }
 
 }

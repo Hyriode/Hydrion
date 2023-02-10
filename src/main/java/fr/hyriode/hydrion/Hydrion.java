@@ -3,8 +3,8 @@ package fr.hyriode.hydrion;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.application.HyriAPIImpl;
 import fr.hyriode.api.impl.application.config.HyriAPIConfig;
-import fr.hyriode.hydrion.configuration.Configuration;
-import fr.hyriode.hydrion.configuration.ConfigurationManager;
+import fr.hyriode.hydrion.config.Config;
+import fr.hyriode.hydrion.config.ConfigManager;
 import fr.hyriode.hydrion.extension.ExtensionManager;
 import fr.hyriode.hydrion.network.NetworkManager;
 import fr.hyriode.hydrion.util.IOUtil;
@@ -29,8 +29,8 @@ public class Hydrion {
     private static ColoredLogger logger;
 
     /** Configuration */
-    private ConfigurationManager configurationManager;
-    private Configuration configuration;
+    private ConfigManager configManager;
+    private Config config;
 
     /** Network */
     private NetworkManager networkManager;
@@ -52,14 +52,14 @@ public class Hydrion {
 
         System.out.println("Starting " + NAME + "...");
 
-        this.configurationManager = new ConfigurationManager();
-        this.configuration = this.configurationManager.loadConfiguration();
+        this.configManager = new ConfigManager();
+        this.config = this.configManager.loadConfiguration();
         this.api = new HydrionImpl(this);
         this.hyriAPI = new HyriAPIImpl(new HyriAPIConfig.Builder()
                 .withDevEnvironment(false)
                 .withHyggdrasil(false)
-                .withRedisConfig(this.configuration.getRedisConfig())
-                .withMongoDBConfig(this.configuration.getMongoDBConfig())
+                .withRedisConfig(this.config.getRedisConfig())
+                .withMongoDBConfig(this.config.getMongoDBConfig())
                 .build(), NAME);
         this.networkManager = new NetworkManager(this);
         this.extensionManager = new ExtensionManager();
@@ -106,12 +106,12 @@ public class Hydrion {
         return this.consoleReader;
     }
 
-    public ConfigurationManager getConfigurationManager() {
-        return this.configurationManager;
+    public ConfigManager getConfigurationManager() {
+        return this.configManager;
     }
 
-    public Configuration getConfiguration() {
-        return this.configuration;
+    public Config getConfiguration() {
+        return this.config;
     }
 
     public NetworkManager getNetworkManager() {

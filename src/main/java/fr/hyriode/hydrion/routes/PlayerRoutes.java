@@ -82,7 +82,6 @@ public class PlayerRoutes extends Routes {
                     return;
                 }
 
-
                 if (account.getRank().isSuperior(rank)) {
                     ctx.error("Invalid rank!", HttpResponseStatus.BAD_REQUEST);
                     return;
@@ -144,6 +143,33 @@ public class PlayerRoutes extends Routes {
                 account.addTransaction(HyriPlusTransaction.TRANSACTION_TYPE, new HyriPlusTransaction(duration));
 
                 ctx.json(response -> response.add("uuid", playerId).add("rank", account.getRank()).add("hyriplus", hyriPlus));
+            } catch (Exception e) {
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
+            }
+        });
+
+        router.post("/gems", (request, ctx) -> {
+            try {
+                final JsonObject body = request.jsonBody();
+                final UUID playerId = NotchianUtil.parseUUID(body.get("uuid").getAsString());
+                final long gems = body.get("gems").getAsLong();
+
+                if (gems <= 0) {
+                    ctx.error("Invalid gems (<= 0)!", HttpResponseStatus.UNPROCESSABLE_ENTITY);
+                    return;
+                }
+
+                final IHyriPlayer account = IHyriPlayer.get(playerId);
+
+                if (account == null) {
+                    ctx.error("Invalid player!", HttpResponseStatus.UNPROCESSABLE_ENTITY);
+                    return;
+                }
+
+                account.getGems().add(gems).withMultiplier(false).exec();
+                account.update();
+
+                ctx.json(response -> response.add("uuid", playerId).add("gems", account.getGems()));
             } catch (Exception e) {
                 ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }

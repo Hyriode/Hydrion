@@ -2,17 +2,16 @@ package fr.hyriode.hydrion.routes;
 
 import com.google.gson.JsonObject;
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.friend.IHyriFriend;
 import fr.hyriode.api.player.IHyriPlayer;
 import fr.hyriode.api.player.IHyriPlayerSession;
-import fr.hyriode.api.rank.hyriplus.HyriPlus;
-import fr.hyriode.api.rank.hyriplus.HyriPlusTransaction;
-import fr.hyriode.api.rank.type.HyriPlayerRankType;
+import fr.hyriode.api.player.model.IHyriFriend;
+import fr.hyriode.api.player.model.IHyriPlus;
+import fr.hyriode.api.player.transaction.HyriPlusTransaction;
+import fr.hyriode.api.rank.PlayerRank;
 import fr.hyriode.hydrion.api.http.IHttpRouter;
 import fr.hyriode.hydrion.api.util.NotchianUtil;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,7 +73,7 @@ public class PlayerRoutes extends Routes {
             try {
                 final JsonObject body = request.jsonBody();
                 final UUID playerId = NotchianUtil.parseUUID(body.get("uuid").getAsString());
-                final HyriPlayerRankType rank = HyriPlayerRankType.valueOf(body.get("rank").getAsString());
+                final PlayerRank rank = PlayerRank.valueOf(body.get("rank").getAsString());
                 final IHyriPlayer account = IHyriPlayer.get(playerId);
 
                 if (account == null) {
@@ -87,9 +86,9 @@ public class PlayerRoutes extends Routes {
                     return;
                 }
 
-                final HyriPlayerRankType oldRank = account.getRank().getPlayerType();
+                final PlayerRank oldRank = account.getRank().getPlayerType();
 
-                account.setPlayerRank(rank);
+                account.getRank().setPlayerType(rank);
                 account.update();
 
                 ctx.json(response -> response.add("uuid", playerId).add("rank", rank).add("old_rank", oldRank));
@@ -125,13 +124,13 @@ public class PlayerRoutes extends Routes {
                     return;
                 }
 
-                if (account.getRank().getRealPlayerType().getId() != HyriPlayerRankType.EPIC.getId()) {
-                    ctx.error("Player doesn't have the required rank (" + account.getRank().getRealPlayerType() + " < " + HyriPlayerRankType.EPIC + ")!", HttpResponseStatus.UNPROCESSABLE_ENTITY);
+                if (account.getRank().getRealPlayerType().getId() != PlayerRank.EPIC.getId()) {
+                    ctx.error("Player doesn't have the required rank (" + account.getRank().getRealPlayerType() + " < " + PlayerRank.EPIC + ")!", HttpResponseStatus.UNPROCESSABLE_ENTITY);
                     return;
                 }
 
                 final long duration = body.get("duration").getAsLong();
-                final HyriPlus hyriPlus = account.getHyriPlus();
+                final IHyriPlus hyriPlus = account.getHyriPlus();
                 final boolean expired = hyriPlus.hasExpire();
 
                 hyriPlus.setDuration(hyriPlus.getDuration() + duration);
@@ -140,7 +139,7 @@ public class PlayerRoutes extends Routes {
                     hyriPlus.enable();
                 }
 
-                account.addTransaction(HyriPlusTransaction.TRANSACTION_TYPE, new HyriPlusTransaction(duration));
+                account.getTransactions().add(HyriPlusTransaction.TRANSACTIONS_TYPE, new HyriPlusTransaction(duration));
 
                 ctx.json(response -> response.add("uuid", playerId).add("rank", account.getRank()).add("hyriplus", hyriPlus));
             } catch (Exception e) {
@@ -178,9 +177,9 @@ public class PlayerRoutes extends Routes {
         router.get("/friends", (request, ctx) -> {
             try {
                 final UUID playerId = NotchianUtil.parseUUID(request.parameter("uuid").getValue());
-                final List<IHyriFriend> friends = HyriAPI.get().getFriendManager().getFriends(playerId);
+                final List<IHyriFriend> friends = IHyriPlayer.get(playerId).getFriends().getAll();
 
-                ctx.json(response -> response.add("uuid", playerId).add("friends", friends == null ? new ArrayList<>() : friends));
+                ctx.json(response -> response.add("uuid", playerId).add("friends", friends));
             } catch (Exception e) {
                 ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }

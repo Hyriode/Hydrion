@@ -16,8 +16,8 @@ allprojects {
             url = 'https://maven.pkg.github.com/Hyriode/HyriAPI/'
 
             credentials {
-                username System.getenv('USERNAME')
-                password System.getenv('TOKEN')
+                username System.getenv('GITHUB_USERNAME')
+                password System.getenv('GITHUB_TOKEN')
             }
         }
     }
@@ -53,6 +53,6 @@ shadowJar {
 dependencies {
     implementation project(':API')
     implementation 'jline:jline:2.14.6'
-    implementation 'fr.hyriode:hyriapi-app:1.4.4'
+    implementation 'fr.hyriode:hyriapi-app:1.5.1'
     implementation 'org.slf4j:slf4j-nop:2.0.1'
 }

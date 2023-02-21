@@ -1,8 +1,8 @@
 package fr.hyriode.hydrion.routes;
 
 import fr.hyriode.api.HyriAPI;
-import fr.hyriode.api.game.HyriGameType;
 import fr.hyriode.api.game.IHyriGameInfo;
+import fr.hyriode.api.game.IHyriGameType;
 import fr.hyriode.api.limbo.IHyriLimboManager;
 import fr.hyriode.api.network.IHyriNetwork;
 import fr.hyriode.api.network.counter.IHyriCategoryCounter;
@@ -63,8 +63,8 @@ public class NetworkRoutes extends Routes {
                 final IHyriCategoryCounter categoryCounter = counter.getCategory(game.getName());
                 final Counter.TypesGame resultGame = new Counter.TypesGame(categoryCounter.getPlayers());
 
-                for (String type : game.getTypes().keySet()) {
-                    resultGame.addType(type, categoryCounter.getPlayers(type));
+                for (IHyriGameType type : game.getTypes()) {
+                    resultGame.addType(type.getName(), categoryCounter.getPlayers(type.getName()));
                 }
 
                 result.addGame(game.getName(), resultGame);

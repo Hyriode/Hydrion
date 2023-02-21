@@ -16,8 +16,8 @@ allprojects {
             url = 'https://maven.pkg.github.com/Hyriode/HyriAPI/'
 
             credentials {
-                username System.getenv('GITHUB_USERNAME')
-                password System.getenv('GITHUB_TOKEN')
+                username System.getenv("GITHUB_USERNAME")
+                password System.getenv("GITHUB_TOKEN")
             }
         }
     }

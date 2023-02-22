@@ -15,6 +15,7 @@ public abstract class HydrionAPI {
 
     public static final Gson GSON = new GsonBuilder()
             .serializeNulls()
+            .excludeFieldsWithoutExposeAnnotation()
             .create();
 
     private static HydrionAPI instance;

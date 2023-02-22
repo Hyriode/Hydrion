@@ -53,6 +53,6 @@ shadowJar {
 dependencies {
     implementation project(':API')
     implementation 'jline:jline:2.14.6'
-    implementation 'fr.hyriode:hyriapi-app:1.5.1'
+    implementation 'fr.hyriode:hyriapi-app:1.5.2-SNAPSHOT'
     implementation 'org.slf4j:slf4j-nop:2.0.1'
 }

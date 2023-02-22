@@ -1,5 +1,7 @@
 package fr.hyriode.hydrion;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.impl.application.HyriAPIImpl;
 import fr.hyriode.api.impl.application.config.HyriAPIConfig;

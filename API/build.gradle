@@ -50,6 +50,6 @@ publishing {
 }
 
 dependencies {
-    api 'fr.hyriode:hyriapi:1.5.1'
+    api 'fr.hyriode:hyriapi:1.5.2-SNAPSHOT'
     api 'io.netty:netty-all:4.1.87.Final'
 }

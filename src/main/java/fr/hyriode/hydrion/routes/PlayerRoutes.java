@@ -58,6 +58,18 @@ public class PlayerRoutes extends Routes {
             ctx.json(response -> response.add("name", name).add("uuid", playerId));
         });
 
+        router.get("/name", (request, ctx) -> {
+            final UUID uuid = UUID.fromString(request.parameter("name").getValue());
+            final IHyriPlayer account = IHyriPlayer.get(uuid);
+
+            if (account == null) {
+                ctx.error("Invalid player!", HttpResponseStatus.BAD_REQUEST);
+                return;
+            }
+
+            ctx.json(response -> response.add("name", account.getName()).add("uuid", uuid));
+        });
+
         router.get("/rank", (request, ctx) -> {
             try {
                 final UUID playerId = NotchianUtil.parseUUID(request.parameter("uuid").getValue());

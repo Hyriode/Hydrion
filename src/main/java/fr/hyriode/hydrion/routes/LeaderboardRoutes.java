@@ -98,7 +98,9 @@ public class LeaderboardRoutes extends Routes {
             this.scores.add(score);
         }
 
-        private record Score(UUID playerId, Number score) {}
+        private record Score(@Expose UUID playerId, @Expose double score) {
+
+        }
 
     }
 

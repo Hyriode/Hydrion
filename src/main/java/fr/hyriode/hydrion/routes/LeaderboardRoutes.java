@@ -1,5 +1,6 @@
 package fr.hyriode.hydrion.routes;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.leaderboard.HyriLeaderboardScope;
 import fr.hyriode.api.leaderboard.HyriLeaderboardScore;
@@ -63,16 +64,24 @@ public class LeaderboardRoutes extends Routes {
 
     private static class Leaderboard {
 
+        @Expose
         private final String type;
+        @Expose
         private final String name;
+        @Expose
         private final HyriLeaderboardScope scope;
 
+        @Expose
         private final long totalSize;
+        @Expose
         private final long currentSize;
 
+        @Expose
         private final long from;
+        @Expose
         private final long to;
 
+        @Expose
         private final List<Score> scores = new ArrayList<>();
 
         public Leaderboard(String type, String name, HyriLeaderboardScope scope, long totalSize, long currentSize, long from, long to) {

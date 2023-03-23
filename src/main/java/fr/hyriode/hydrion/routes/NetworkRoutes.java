@@ -1,5 +1,6 @@
 package fr.hyriode.hydrion.routes;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.game.IHyriGameType;
@@ -76,8 +77,10 @@ public class NetworkRoutes extends Routes {
 
     private static class Counter {
 
+        @Expose
         private final int players;
 
+        @Expose
         private final Map<String, Game> games = new HashMap<>();
 
         public Counter(int players) {
@@ -90,6 +93,7 @@ public class NetworkRoutes extends Routes {
 
         private static class Game {
 
+            @Expose
             private final int players;
 
             public Game(int players) {
@@ -100,6 +104,7 @@ public class NetworkRoutes extends Routes {
 
         private static class TypesGame extends Game {
 
+            @Expose
             private final Map<String, Integer> types = new HashMap<>();
 
             public TypesGame(int players) {

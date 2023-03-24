@@ -59,7 +59,7 @@ public class PlayerRoutes extends Routes {
         });
 
         router.get("/name", (request, ctx) -> {
-            final UUID uuid = UUID.fromString(request.parameter("name").getValue());
+            final UUID uuid = UUID.fromString(request.parameter("uuid").getValue());
             final IHyriPlayer account = IHyriPlayer.get(uuid);
 
             if (account == null) {

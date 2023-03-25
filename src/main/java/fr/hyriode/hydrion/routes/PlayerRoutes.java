@@ -26,9 +26,21 @@ public class PlayerRoutes extends Routes {
 
         router.get("/", (request, ctx) -> {
             try {
-                final UUID playerId = NotchianUtil.parseUUID(request.parameter("uuid").getValue());
+                if (request.hasParameter("uuid")) {
+                    final UUID playerId = NotchianUtil.parseUUID(request.parameter("uuid").getValue());
 
-                ctx.json(response -> response.add("uuid", playerId).add("player", IHyriPlayer.get(playerId)));
+                    ctx.json(response -> response.add("uuid", playerId).add("player", IHyriPlayer.get(playerId)));
+                } else if (request.hasParameter("name")) {
+                    final String playerName = request.parameter("name").getValue();
+
+                    if (!NotchianUtil.isNameValid(playerName)) {
+                        ctx.error("Invalid name!", HttpResponseStatus.BAD_REQUEST);
+                        return;
+                    }
+
+                    ctx.json(response -> response.add("name", playerName).add("player", HyriAPI.get().getPlayerManager().getPlayer(playerName)));
+                }
+                throw new IllegalArgumentException();
             } catch (Exception e) {
                 ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }

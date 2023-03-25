@@ -46,28 +46,36 @@ public class PlayerRoutes extends Routes {
         });
 
         router.get("/uuid", (request, ctx) -> {
-            final String name = request.parameter("name").getValue();
+            try {
+                final String name = request.parameter("name").getValue();
 
-            if (!NotchianUtil.isNameValid(name)) {
-                ctx.error("Invalid name!", HttpResponseStatus.BAD_REQUEST);
-                return;
+                if (!NotchianUtil.isNameValid(name)) {
+                    ctx.error("Invalid name!", HttpResponseStatus.BAD_REQUEST);
+                    return;
+                }
+
+                final UUID playerId = HyriAPI.get().getPlayerManager().getPlayerId(name);
+
+                ctx.json(response -> response.add("name", name).add("uuid", playerId));
+            } catch (Exception e) {
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }
-
-            final UUID playerId = HyriAPI.get().getPlayerManager().getPlayerId(name);
-
-            ctx.json(response -> response.add("name", name).add("uuid", playerId));
         });
 
         router.get("/name", (request, ctx) -> {
-            final UUID uuid = UUID.fromString(request.parameter("uuid").getValue());
-            final IHyriPlayer account = IHyriPlayer.get(uuid);
+            try {
+                final UUID uuid = UUID.fromString(request.parameter("uuid").getValue());
+                final IHyriPlayer account = IHyriPlayer.get(uuid);
 
-            if (account == null) {
-                ctx.error("Invalid player!", HttpResponseStatus.BAD_REQUEST);
-                return;
+                if (account == null) {
+                    ctx.error("Invalid player!", HttpResponseStatus.BAD_REQUEST);
+                    return;
+                }
+
+                ctx.json(response -> response.add("name", account.getName()).add("uuid", uuid));
+            } catch (Exception e) {
+                ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }
-
-            ctx.json(response -> response.add("name", account.getName()).add("uuid", uuid));
         });
 
         router.get("/rank", (request, ctx) -> {

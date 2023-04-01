@@ -179,14 +179,14 @@ public class PlayerRoutes extends Routes {
             }
         });
 
-        router.post("/gems", (request, ctx) -> {
+        router.post("/hyodes", (request, ctx) -> {
             try {
                 final JsonObject body = request.jsonBody();
                 final UUID playerId = NotchianUtil.parseUUID(body.get("uuid").getAsString());
                 final long gems = body.get("gems").getAsLong();
 
                 if (gems <= 0) {
-                    ctx.error("Invalid gems (<= 0)!", HttpResponseStatus.UNPROCESSABLE_ENTITY);
+                    ctx.error("Invalid hyodes (<= 0)!", HttpResponseStatus.UNPROCESSABLE_ENTITY);
                     return;
                 }
 
@@ -197,10 +197,10 @@ public class PlayerRoutes extends Routes {
                     return;
                 }
 
-                account.getGems().add(gems).withMultiplier(false).exec();
+                account.getHyodes().add(gems).withMultiplier(false).exec();
                 account.update();
 
-                ctx.json(response -> response.add("uuid", playerId).add("gems", account.getGems()));
+                ctx.json(response -> response.add("uuid", playerId).add("hyodes", account.getHyodes()));
             } catch (Exception e) {
                 ctx.error("Invalid request!", HttpResponseStatus.BAD_REQUEST);
             }

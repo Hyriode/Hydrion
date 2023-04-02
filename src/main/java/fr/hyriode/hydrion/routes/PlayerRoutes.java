@@ -183,7 +183,7 @@ public class PlayerRoutes extends Routes {
             try {
                 final JsonObject body = request.jsonBody();
                 final UUID playerId = NotchianUtil.parseUUID(body.get("uuid").getAsString());
-                final long gems = body.get("gems").getAsLong();
+                final long gems = body.get("hyodes").getAsLong();
 
                 if (gems <= 0) {
                     ctx.error("Invalid hyodes (<= 0)!", HttpResponseStatus.UNPROCESSABLE_ENTITY);

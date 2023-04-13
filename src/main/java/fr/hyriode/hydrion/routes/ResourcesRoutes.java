@@ -2,6 +2,8 @@ package fr.hyriode.hydrion.routes;
 
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.game.IHyriGameInfo;
+import fr.hyriode.api.game.rotating.IHyriRotatingGame;
+import fr.hyriode.api.impl.common.game.rotating.HyriRotatingGame;
 import fr.hyriode.hydrion.api.HydrionAPI;
 import fr.hyriode.hydrion.api.http.IHttpRouter;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -41,8 +43,25 @@ public class ResourcesRoutes extends Routes {
             }
         });
 
-        router.get("/rotating-game", (request, ctx) -> ctx.json(response -> response.add("rotating_game", HyriAPI.get().getGameManager().getRotatingGameManager().getRotatingGame())));
+        router.get("/rotating-game", (request, ctx) -> ctx.json(response -> {
+            final IHyriRotatingGame rotatingGame = HyriAPI.get().getGameManager().getRotatingGameManager().getRotatingGame();
+            final RotatingGame result = new RotatingGame(rotatingGame.getInfo(), rotatingGame.sinceWhen());
+
+            response.add("rotating_game", result);
+        }));
         router.get("/rotating-games", (request, ctx) -> ctx.json(response -> response.add("rotating_games", HyriAPI.get().getGameManager().getRotatingGameManager().getRotatingGames())));
+    }
+
+    private static class RotatingGame {
+
+        private final IHyriGameInfo info;
+        private final long sinceWhen;
+
+        public RotatingGame(IHyriGameInfo info, long sinceWhen) {
+            this.info = info;
+            this.sinceWhen = sinceWhen;
+        }
+
     }
 
 }

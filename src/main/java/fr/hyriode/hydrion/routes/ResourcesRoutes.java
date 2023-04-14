@@ -1,5 +1,6 @@
 package fr.hyriode.hydrion.routes;
 
+import com.google.gson.annotations.Expose;
 import fr.hyriode.api.HyriAPI;
 import fr.hyriode.api.game.IHyriGameInfo;
 import fr.hyriode.api.game.rotating.IHyriRotatingGame;
@@ -54,7 +55,9 @@ public class ResourcesRoutes extends Routes {
 
     private static class RotatingGame {
 
+        @Expose
         private final IHyriGameInfo info;
+        @Expose
         private final long sinceWhen;
 
         public RotatingGame(IHyriGameInfo info, long sinceWhen) {

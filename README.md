@@ -1,14 +1,13 @@
 # Hyriode - Hydrion
 
-Ce projet est mis à disposition de la communauté suite à la fermeture d'[**Hyriode**](https://hyriode.fr) (network Minecraft mini-jeux).<br>
+This project is made available to the community following the closure of [**Hyriode**](https://hyriode.fr) (a Minecraft mini-games network).<br>
 
-Ce project est publié sous licence GNU GPLv3. Cela signifie que vous pouvez télécharger, modifier ou redistribuer ce projet librement, tant que vous *précisez les modifications effectuées*, que vous *redistribuez vos modifications sous la même licence*, et sans oublier de *préciser que votre travail reprend ce projet d'Hyriode*.<br>
-Le texte de licence est disponible [ici](LICENCE.md) si vous souhaitez avoir plus de détails.
-
+This project is released under the GNU GPLv3 license. This means you can download, modify, or redistribute this project freely, as long as you *specify the modifications made*, *redistribute your modifications under the same license*, and remember to *identify that your work is based on this project from Hyriode*.<br>
+The license text is available [here](LICENCE.md) if you want more details.
 
 ## Description
 
-Hydrion est la RestAPI permettant de communiquer avec l'infrastructure et de récupérer des données depuis l'extérieur (ex: le site web).
+Hydrion is a RestAPI which permits to retrieve data from outside the infrastructure (e.g. for the website).
 
-- Type : Infrastructure
-- Développeur(s) : AstFaster
+- Type: Infrastructure
+- Developer(s) : AstFaster
